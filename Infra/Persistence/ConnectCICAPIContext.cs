@@ -1,4 +1,4 @@
-﻿namespace connect_cic_api.Infra.Persisence;
+﻿namespace connect_cic_api.Infra.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
