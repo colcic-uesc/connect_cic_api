@@ -14,7 +14,7 @@ public class ConnectCICAPIContext : DbContext
     {
 
         #region SqLite ConnectionString
-        var StringConnection = "Data Source=uesc_courses.db";
+        var StringConnection = "Data Source=vagas.db";
         optionsBuilder.UseSqlite(StringConnection)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
