@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("connect_cic_api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+92c631596d5c07493305284bdfba9eed6e4e7e4f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c4c4d37d6c31e8311fc54b16f0e578c6357ae725")]
 [assembly: System.Reflection.AssemblyProductAttribute("connect_cic_api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("connect_cic_api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
