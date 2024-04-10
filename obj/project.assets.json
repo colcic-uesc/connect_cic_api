@@ -1187,19 +1187,19 @@
     ]
   },
   "packageFolders": {
-    "/home/colcic/.nuget/packages/": {}
+    "/home/lavinis/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/colcic/Documentos/web/connect_cic_api/connect_cic_api.csproj",
+      "projectUniqueName": "/home/lavinis/Web/connect_cic_api/connect_cic_api.csproj",
       "projectName": "connect_cic_api",
-      "projectPath": "/home/colcic/Documentos/web/connect_cic_api/connect_cic_api.csproj",
-      "packagesPath": "/home/colcic/.nuget/packages/",
-      "outputPath": "/home/colcic/Documentos/web/connect_cic_api/obj/",
+      "projectPath": "/home/lavinis/Web/connect_cic_api/connect_cic_api.csproj",
+      "packagesPath": "/home/lavinis/.nuget/packages/",
+      "outputPath": "/home/lavinis/Web/connect_cic_api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/colcic/.nuget/NuGet/NuGet.Config"
+        "/home/lavinis/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
