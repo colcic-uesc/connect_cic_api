@@ -1187,19 +1187,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\evera\\.nuget\\packages\\": {}
+    "/home/colcic/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\evera\\Documents\\workspace\\connect_cic_api\\connect_cic_api.csproj",
+      "projectUniqueName": "/home/colcic/Documentos/web/connect_cic_api/connect_cic_api.csproj",
       "projectName": "connect_cic_api",
-      "projectPath": "c:\\Users\\evera\\Documents\\workspace\\connect_cic_api\\connect_cic_api.csproj",
-      "packagesPath": "C:\\Users\\evera\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\evera\\Documents\\workspace\\connect_cic_api\\obj\\",
+      "projectPath": "/home/colcic/Documentos/web/connect_cic_api/connect_cic_api.csproj",
+      "packagesPath": "/home/colcic/.nuget/packages/",
+      "outputPath": "/home/colcic/Documentos/web/connect_cic_api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\evera\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/colcic/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1217,11 +1217,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -1256,7 +1251,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.103/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

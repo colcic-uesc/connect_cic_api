@@ -1,5 +1,6 @@
 ﻿namespace connect_cic_api.Infra.Persistence;
 
+using connect_cic_api.Domain;
 using Microsoft.EntityFrameworkCore;
 
 public class ConnectCICAPIContext : DbContext
@@ -10,6 +11,8 @@ public class ConnectCICAPIContext : DbContext
         //Database.EnsureDeleted();
         Database.EnsureCreated();
       }
+
+    public DbSet<Usuario> Usuarios { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
@@ -20,4 +23,10 @@ public class ConnectCICAPIContext : DbContext
                 .EnableDetailedErrors();
         #endregion
     }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+      {
+            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+            modelBuilder.Entity<Usuario>().HasKey(c => c.UsuarioID);
+
+      }
 }
