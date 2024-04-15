@@ -15,6 +15,7 @@ public class ConnectCICAPIContext : DbContext
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<TipoVaga> TipoVagas { get; set; }
     public DbSet<Vaga> Vagas { get; set; }
+    public DbSet<Aluno> Alunos { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
