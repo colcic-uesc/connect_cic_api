@@ -13,6 +13,7 @@ public class ConnectCICAPIContext : DbContext
       }
 
     public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<TipoVaga> TipoVagas { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
@@ -27,6 +28,9 @@ public class ConnectCICAPIContext : DbContext
       {
             modelBuilder.Entity<Usuario>().ToTable("Usuarios");
             modelBuilder.Entity<Usuario>().HasKey(c => c.UsuarioID);
+
+            modelBuilder.Entity<TipoVaga>().ToTable("TipoVagas");
+            modelBuilder.Entity<TipoVaga>().HasKey(c => c.VagaTipoID);
 
       }
 }
