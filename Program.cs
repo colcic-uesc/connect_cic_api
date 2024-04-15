@@ -16,8 +16,8 @@ var app = builder.Build();
 
 
 //endpoints
-
 app.RegisterUsuariosEndpoint();
 app.RegisterTipoVagasEndpoint();
+app.RegisterVagasEndpoint();
 
 app.Run();
