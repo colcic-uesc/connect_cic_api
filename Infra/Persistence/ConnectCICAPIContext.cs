@@ -29,5 +29,11 @@ public class ConnectCICAPIContext : DbContext
             modelBuilder.Entity<Usuario>().ToTable("Usuarios");
             modelBuilder.Entity<Usuario>().HasKey(c => c.UsuarioID);
 
+            modelBuilder.Entity<Vaga>().ToTable("Vagas");
+            modelBuilder.Entity<Vaga>().HasKey(v => v.VagaID);
+            modelBuilder.Entity<Vaga>().HasOne(v => v.Professor).WithMany(p => p.Vagas).HasForeignKey(v => v.ProfessorID);
+            modelBuilder.Entity<Vaga>().HasOne(v => v.TipoVaga).WithMany(t => t.Vagas).HasForeignKey(v => v.TipoVagaID);
+            modelBuilder.Entity<Vaga>().HasMany(v => v.Alunos).WithMany(a => a.Vagas);
+
       }
 }
