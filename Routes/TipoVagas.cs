@@ -4,7 +4,7 @@ using connect_cic_api.Infra.Persistence;
 
 public static class TipoVagas
 {
-    public static void RegisterUsuariosEndpoint (this IEndpointRouteBuilder routes){
+    public static void RegisterTipoVagasEndpoint (this IEndpointRouteBuilder routes){
         var tipoVagasRoutes = routes.MapGroup("/tipoVagas");
 
         tipoVagasRoutes.MapGet("", (ConnectCICAPIContext context) => context.TipoVagas.ToList());

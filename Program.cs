@@ -1,4 +1,7 @@
 using connect_cic_api.Infra.Persistence;
+using connect_cic_api.Domain;
+using Microsoft.EntityFrameworkCore;
+using connect_cic_api.API.Endpoints;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,7 @@ var app = builder.Build();
 
 //endpoints
 
-
+app.RegisterUsuariosEndpoint();
+app.RegisterTipoVagasEndpoint();
 
 app.Run();
