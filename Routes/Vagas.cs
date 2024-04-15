@@ -8,7 +8,7 @@ public static class Vagas
 {
     public static void RegisterVagasEndpoint(this IEndpointRouteBuilder routes){
         var VagasRoutes = routes.MapGroup("/vagas");
-        var ProfessorVagas = routes.MapGroup("/professors/{id}/vagas");
+        var ProfessorVagas = routes.MapGroup("/professors/{idProf}/vagas");
 
         // GET
         // /professores/id/vagas - lista as vagas de um professor

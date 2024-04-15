@@ -2,5 +2,6 @@
 
 public class Professor
 {
+    public int ProfessorID { get; set; }
     public virtual ICollection<Vaga>? Vagas { get; set; }
 }
