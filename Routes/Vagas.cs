@@ -18,6 +18,7 @@ public static class Vagas
         VagasRoutes.MapGet("", (ConnectCICAPIContext context) => context.Vagas.ToList());
         VagasRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) => context.Vagas.FirstOrDefault(v => v.VagaID == id));
         VagasRoutes.MapGet("/{id}/alunos", (ConnectCICAPIContext context, int id) => context.Vagas.FirstOrDefault(v => v.VagaID == id)?.Alunos?.ToList());
+        ProfessorVagas.MapGet("", (ConnectCICAPIContext context, int idProf) => context.Vagas.Where(v => v.ProfessorID == idProf).ToList());
 
         // POST
         // /professors/id/vagas - cadastra vaga para determinado professor
