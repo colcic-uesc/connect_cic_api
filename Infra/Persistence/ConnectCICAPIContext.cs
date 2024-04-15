@@ -13,6 +13,7 @@ public class ConnectCICAPIContext : DbContext
       }
 
     public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Vaga> Vagas { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
