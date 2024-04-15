@@ -21,18 +21,26 @@ public static class Usuarios
         usuariosRoutes.MapPut("/{id}", (int id, Usuario usuario, ConnectCICAPIContext context) =>
         {
             var usuarioToUpdate = context.Usuarios.FirstOrDefault(u => u.UsuarioID == id);
-            usuarioToUpdate.Email = usuario.Email;
-            usuarioToUpdate.Senha = usuario.Senha;
-            usuarioToUpdate.Permissao = usuario.Permissao;
-            context.SaveChanges();
+            
+            if(usuarioToUpdate is not null){
+                usuarioToUpdate.Email = usuario.Email;
+                usuarioToUpdate.Senha = usuario.Senha;
+                usuarioToUpdate.Permissao = usuario.Permissao;
+                context.SaveChanges();
+            }
+            
             return usuarioToUpdate;
         });
 
         usuariosRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
             var usuarioToDelete = context.Usuarios.FirstOrDefault(u => u.UsuarioID == id);
-            context.Usuarios.Remove(usuarioToDelete);
-            context.SaveChanges();
+            
+            if(usuarioToDelete is not null){
+                context.Usuarios.Remove(usuarioToDelete);
+                context.SaveChanges();
+            }
+            
             return usuarioToDelete;
         });
     }   
