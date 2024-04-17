@@ -8,9 +8,14 @@ public static class Alunos
     public static void RegisterAlunosEndpoint(this IEndpointRouteBuilder routes){
         
         var AlunosRoutes = routes.MapGroup("/vagas/{id}/Alunos");
-       
+        //Gets
+        //  /alunos - lista alunos
+        //  /alunos/id - um aluno especifico
         AlunosRoutes.MapGet("", (ConnectCICAPIContext context) => context.Alunos.ToList());
 
+        // Posts
+        // /alunos - cadastra aluno
+        // /vagas/id/alunos - aluno se candidata a vaga
         AlunosRoutes.MapPost("", (Aluno alunosrout, ConnectCICAPIContext context) =>
         
         {
@@ -20,7 +25,8 @@ public static class Alunos
         });
     
 
-    
+        // Puts
+        // /alunos/id - atualiza aluno
          AlunosRoutes.MapPut("/{id}", (int id, Aluno alunosrout, ConnectCICAPIContext context) =>
         
         {
@@ -32,6 +38,9 @@ public static class Alunos
          return AlunosToUpdate;
         });
 
+        // Deletes
+        // /alunos/id - deleta aluno
+        // /vagas/idVaga/alunos/idAluno - aluno retira interesse na vaga
         AlunosRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
 
         {
