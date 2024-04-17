@@ -33,7 +33,7 @@ public static class Alunos
          
          var AlunosToUpdate = context.Alunos.FirstOrDefault(c => c.AlunoID == id);
 
-         AlunosToUpdate.Nome = alunosrout.Nome;
+         AlunosToUpdate.Nome = alunosrout.Nome; //colocar o if
          context.SaveChanges();
          return AlunosToUpdate;
         });
