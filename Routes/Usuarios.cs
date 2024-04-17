@@ -34,9 +34,11 @@ public static class Usuarios
                 usuarioToUpdate.Senha = usuario.Senha;
                 usuarioToUpdate.Permissao = usuario.Permissao;
                 context.SaveChanges();
+            }else{
+                return Results.NotFound();
             }
             
-            return usuarioToUpdate;
+            return Results.NoContent();
         });
 
         // DELETEs
