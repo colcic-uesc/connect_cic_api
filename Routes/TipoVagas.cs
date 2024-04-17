@@ -5,7 +5,7 @@ using connect_cic_api.Infra.Persistence;
 public static class TipoVagas
 {
     public static void RegisterTipoVagasEndpoint (this IEndpointRouteBuilder routes){
-        var tipoVagasRoutes = routes.MapGroup("/tipo-vagas");
+        var tipoVagasRoutes = routes.MapGroup("/tipos-vaga");
 
         // Gets
         // /tipo-vagas - lista tipos de vagas
