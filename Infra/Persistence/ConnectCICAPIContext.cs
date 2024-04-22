@@ -34,6 +34,9 @@ public class ConnectCICAPIContext : DbContext
             modelBuilder.Entity<TipoVaga>().ToTable("TipoVagas");
             modelBuilder.Entity<TipoVaga>().HasKey(c => c.VagaTipoID);
 
+            modelBuilder.Entity<Usuario>().ToTable("Alunos");
+            modelBuilder.Entity<Usuario>().HasKey(a => a.AlunosID);
+
             modelBuilder.Entity<Professor>().ToTable("Professores");
             modelBuilder.Entity<Professor>().HasKey(p => p.ProfessorID);
 
