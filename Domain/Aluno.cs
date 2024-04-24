@@ -7,5 +7,6 @@ public class Aluno
     public required string Email {get; set;}
     public required string Curso {get; set;}
     public required float CRAA {get; set;}
+    public required string Status {get; set;}
     public virtual ICollection<Vaga>? Vagas {get; set;}
 }
