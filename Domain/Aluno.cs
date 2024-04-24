@@ -9,4 +9,7 @@ public class Aluno
     public required float CRAA {get; set;}
     public required string Status {get; set;}
     public virtual ICollection<Vaga>? Vagas {get; set;}
+
+    public int UsuarioID { get; set; }
+    public virtual Usuario? Usuario { get; set; }
 }
