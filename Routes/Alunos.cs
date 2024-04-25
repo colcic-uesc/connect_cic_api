@@ -1,5 +1,6 @@
 using connect_cic_api.Domain;
 using connect_cic_api.Infra.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace connect_cic_api.API.Endpoints;
 
@@ -7,53 +8,43 @@ public static class Alunos
 {
     public static void RegisterAlunosEndpoint(this IEndpointRouteBuilder routes){
         
-        var AlunosRoutes = routes.MapGroup("/vagas/{id}/Alunos");
+        var AlunosRoutes = routes.MapGroup("alunos");
+        var VagasRoutes = routes.MapGroup("vagas/{id}");
         //Gets
         //  /alunos - lista alunos  ok
-        AlunosRoutes.MapGet("", async (ConnectCICAPIContext context) =>
-        {
-            
-            return await context.Alunos.ToListAsync();
-        
-        });
-        //  /alunos/id - um aluno especifico
         AlunosRoutes.MapGet("", (ConnectCICAPIContext context) => context.Alunos.ToList());
+        //  /alunos/id - um aluno especifico
+        AlunosRoutes.MapGet("/id", (ConnectCICAPIContext context, int id) => context.Alunos.FirstOrDefault(c => c.AlunoID == id));
 
         // Posts
         // /alunos - cadastra aluno ok
-        AlunosRoutes.MapPost("", async (Aluno aluno, ConnectCICAPIContext context) =>
+        AlunosRoutes.MapPost("", (Aluno aluno, ConnectCICAPIContext context) =>
         {
             context.Alunos.Add(aluno);
-            await context.SaveChangesAsync();
+            context.SaveChangesAsync();
             return aluno;
         });
 
         // /vagas/id/alunos - aluno se candidata a vaga
-        AlunosRoutes.MapPost("", (Aluno alunosrout, ConnectCICAPIContext context) =>
+        VagasRoutes.MapPost("", (Aluno alunosrout, int id, ConnectCICAPIContext context) =>
         {
+            var vagaSelecionada = context.Vagas.Include(v => v.Alunos).FirstOrDefault(c => c.VagaID == id);
+
+            if (vagaSelecionada == null) 
+                return Results.NotFound();
+            
+            if (vagaSelecionada.Alunos == null)
+                vagaSelecionada.Alunos = new List<Aluno>();
+
+
             context.Alunos.Add(alunosrout);
-            
             context.SaveChanges();
-            
-            return alunosrout;
+            return Results.Created($"/vagas/{id}/alunos", alunosrout);
         });
     
 
         // Puts
         // /alunos/id - atualiza aluno ok
-        AlunosRoutes.MapPut("/{id}", async (int id, Aluno aluno, ConnectCICAPIContext context) =>
-        {
-            var alunoToUpdate = await context.Alunos.FirstOrDefaultAsync(c => c.AlunoID == id);
-            
-            if (alunoToUpdate != null)
-            {
-                alunoToUpdate.Nome = aluno.Nome;
-                await context.SaveChangesAsync();
-            }
-            
-            return alunoToUpdate;
-        });
-        
         AlunosRoutes.MapPut("/{id}", (int id, Aluno alunosrout, ConnectCICAPIContext context) => 
         {
          
@@ -62,6 +53,10 @@ public static class Alunos
             if(AlunosToUpdate is not null){
             
                 AlunosToUpdate.Nome = alunosrout.Nome; // editar o if
+                AlunosToUpdate.EmailContato = alunosrout.EmailContato;
+                AlunosToUpdate.Curso = alunosrout.Curso;
+                AlunosToUpdate.CRAA = alunosrout.CRAA;
+                AlunosToUpdate.Status = alunosrout.Status;
             
                 context.SaveChanges();
             }
@@ -70,36 +65,25 @@ public static class Alunos
         });
 
         // Deletes
-        // /alunos/id - deleta aluno ok
-        AlunosRoutes.MapDelete("/{id}", async (int id, ConnectCICAPIContext context) =>
-        {
-        
-            var alunoToDelete = await context.Alunos.FirstOrDefaultAsync(c => c.AlunoID == id);
-        
-            if (alunoToDelete != null)
-            {
-            
-                context.Alunos.Remove(alunoToDelete);
-            
-                await context.SaveChangesAsync();
-            
-            }
-        
-            return alunoToDelete;
-        
-        });
 
         // /vagas/idVaga/alunos/idAluno - aluno retira interesse na vaga
+        VagasRoutes.MapDelete("alunos/{idAluno}", (int id, int idAluno, ConnectCICAPIContext context) =>
+        {
+            var vagaSelecionada = context.Vagas.Include(v => v.Alunos).FirstOrDefault()
+        });
 
+        // /alunos/id - deleta aluno ok
         AlunosRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
             var AlunosToDelete = context.Alunos.FirstOrDefault(c => c.AlunoID == id);
-        
-            context.Alunos.Remove(AlunosToDelete);
-        
-            context.SaveChanges();
-        
-            return AlunosToDelete;
+
+            if (AlunosToDelete == null)
+                return Results.NotFound();
+            else{
+                context.Alunos.Remove(AlunosToDelete);
+                context.SaveChanges();
+                return Results.NoContent();
+            }
         });
 
     }
