@@ -8,19 +8,21 @@ namespace connect_cic_api.API.Endpoints
     {
         public static void RegisterProfessoresEndpoint(this IEndpointRouteBuilder routes)
         {
-            var professoresRoutes = routes.MapGroup("professores");
+            var professoresRoutes = routes.MapGroup("/professores");
 
-            // GET: /professores - Lista todos os professores
-            professoresRoutes.MapGet("", async (ConnectCICAPIContext context) =>
+            // GETs
+            // /professores - Lista todos os professores
+            // /professores/{id} - Retorna um professor específico
+            // /professores/{id}/vagas - lista as vagas de um professor
+            professoresRoutes.MapGet("", (ConnectCICAPIContext context) =>
             {
-                var professores = await context.Professores.ToListAsync();
+                var professores = context.Professores.ToList();
                 return Results.Ok(professores);
             });
 
-            // GET: /professores/{id} - Retorna um professor específico
-            professoresRoutes.MapGet("/{id}", async (int id, ConnectCICAPIContext context) =>
+            professoresRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) =>
             {
-                var professor = await context.Professores.FindAsync(id);
+                var professor = context.Professores.FirstOrDefault(p => p.ProfessorID == id);
 
                 if (professor == null)
                 {
@@ -29,19 +31,39 @@ namespace connect_cic_api.API.Endpoints
 
                 return Results.Ok(professor);
             });
+            professoresRoutes.MapGet("/{id}/vagas", (ConnectCICAPIContext context, int id) => {
+                var professor = context.Professores.FirstOrDefault(p => p.ProfessorID == id);
 
-            // POST: /professores - Cadastra um novo professor
-            professoresRoutes.MapPost("", async (Professor professor, ConnectCICAPIContext context) =>
+                if (professor == null){
+                    return Results.NotFound();
+                }else{
+                    var vagas = context.Vagas.Where(v => v.ProfessorID == id).ToList();
+                    return Results.Ok(vagas);
+                }
+            });
+
+            // POSTs
+            // /professores - Cadastra um novo professor
+            // /professors/id/vagas - cadastra vaga para determinado professor
+            professoresRoutes.MapPost("", (Professor professor, ConnectCICAPIContext context) =>
             {
                 context.Professores.Add(professor);
-                await context.SaveChangesAsync();
+                context.SaveChanges();
                 return Results.Created($"/professores/{professor.ProfessorID}", professor);
             });
 
-            // PUT: /professores/{id} - Atualiza um professor existente
-            professoresRoutes.MapPut("/{id}", async (int id, Professor professorData, ConnectCICAPIContext context) =>
+            professoresRoutes.MapPost("/{id}/vagas", (ConnectCICAPIContext context, Vaga vaga, int id) => {
+                vaga.ProfessorID = id;
+                context.Vagas.Add(vaga);
+                context.SaveChanges();
+                return Results.Created($"/vagas/{vaga.VagaID}", vaga);
+            });
+
+            // PUTs
+            // /professores/{id} - Atualiza um professor existente
+            professoresRoutes.MapPut("/{id}",  (int id, Professor professorData, ConnectCICAPIContext context) =>
             {
-                var professor = await context.Professores.FindAsync(id);
+                var professor = context.Professores.FirstOrDefault(p => p.ProfessorID == id);
 
                 if (professor == null)
                 {
@@ -50,17 +72,19 @@ namespace connect_cic_api.API.Endpoints
 
                 // Atualiza os dados do professor com os novos dados
                 professor.Nome = professorData.Nome;
-                professor.Email = professorData.Email;
-                professor.Cargo = professorData.Cargo;
+                professor.EmailContato = professorData.EmailContato;
+                professor.Departamento = professorData.Departamento;
 
-                await context.SaveChangesAsync();
+
+                context.SaveChanges();
                 return Results.NoContent();
             });
 
+
             // DELETE: /professores/{id} - Deleta um professor
-            professoresRoutes.MapDelete("/{id}", async (int id, ConnectCICAPIContext context) =>
+            professoresRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
             {
-                var professor = await context.Professores.FindAsync(id);
+                var professor = context.Professores.FirstOrDefault(p => p.ProfessorID == id);
 
                 if (professor == null)
                 {
@@ -68,7 +92,7 @@ namespace connect_cic_api.API.Endpoints
                 }
 
                 context.Professores.Remove(professor);
-                await context.SaveChangesAsync();
+                context.SaveChanges();
                 return Results.NoContent();
             });
         }

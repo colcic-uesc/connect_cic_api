@@ -8,5 +8,7 @@ public class Usuario
     public required string Permissao {get; set;}
 
     public virtual Aluno? Aluno {get; set;}
+    public virtual int? AlunoID {get; set;}
     public virtual Professor? Professor {get; set;}
+    public virtual int? ProfessorID {get; set;}
 }

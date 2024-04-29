@@ -16,6 +16,7 @@ public class ConnectCICAPIContext : DbContext
     public DbSet<TipoVaga> TipoVagas { get; set; }
     public DbSet<Vaga> Vagas { get; set; }
     public DbSet<Aluno> Alunos { get; set; }
+    public DbSet<Professor> Professores { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
@@ -30,17 +31,27 @@ public class ConnectCICAPIContext : DbContext
       {
             modelBuilder.Entity<Usuario>().ToTable("Usuarios");
             modelBuilder.Entity<Usuario>().HasKey(c => c.UsuarioID);
+            modelBuilder.Entity<Usuario>()
+              .HasOne(u => u.Professor)
+              .WithOne(a => a.Usuario)
+              .HasForeignKey<Professor>(a => a.UsuarioID)
+              .IsRequired(false);
+            modelBuilder.Entity<Usuario>()
+              .HasOne(u => u.Aluno)
+              .WithOne(a => a.Usuario)
+              .HasForeignKey<Aluno>(a => a.UsuarioID)
+              .IsRequired(false);
 
             modelBuilder.Entity<TipoVaga>().ToTable("TiposVaga");
             modelBuilder.Entity<TipoVaga>().HasKey(c => c.VagaTipoID);
 
             modelBuilder.Entity<Aluno>().ToTable("Alunos");
             modelBuilder.Entity<Aluno>().HasKey(a => a.AlunoID);
-            modelBuilder.Entity<Aluno>().HasOne(a => a.Usuario).WithOne(u => u.Aluno).HasForeignKey<Aluno>(a => a.UsuarioID);
+
 
             modelBuilder.Entity<Professor>().ToTable("Professores");
             modelBuilder.Entity<Professor>().HasKey(p => p.ProfessorID);
-            modelBuilder.Entity<Professor>().HasOne(p => p.Usuario).WithOne(u => u.Professor).HasForeignKey<Professor>(p => p.UsuarioID);
+            
 
             modelBuilder.Entity<Vaga>().ToTable("Vagas");
             modelBuilder.Entity<Vaga>().HasKey(v => v.VagaID);
