@@ -3,6 +3,12 @@ using connect_cic_api.Domain;
 using Microsoft.EntityFrameworkCore;
 using connect_cic_api.API.Endpoints;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+//using connect_cic_api.Services.Validators;
+using connect_cic_api.Services.DTO;
+using connect_cic_api.Application.Services;
+using System.Text;
+using Microsoft.AspNetCore.Hosting.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
