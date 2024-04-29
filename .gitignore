@@ -485,3 +485,9 @@ $RECYCLE.BIN/
 
 
 .vscode
+
+# banco de dados sqlite
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
