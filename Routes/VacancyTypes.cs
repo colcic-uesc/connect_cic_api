@@ -40,7 +40,7 @@ public static class VacancyTypes
         // /vacancy-types/id - deleta tipo de vaga
         VacancyTypesRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
-            var VacancyTypToDelete = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
+            var VacancyTypeToDelete = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
             
             if(VacancyTypeToDelete is not null){
                 context.VacancyTypes.Remove(VacancyTypeToDelete);

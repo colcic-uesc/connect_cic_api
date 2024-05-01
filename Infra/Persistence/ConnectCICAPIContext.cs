@@ -28,7 +28,7 @@ public class ConnectCICAPIContext : DbContext
         #endregion
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-      {
+    {
 
             # region Enities Configuration
             modelBuilder.Entity<User>().ToTable("Users");
@@ -66,7 +66,7 @@ public class ConnectCICAPIContext : DbContext
 
 
             # region seed data
-            modelBuilder.Entity<Vacancytype>().HasData(
+            modelBuilder.Entity<VacancyType>().HasData(
                 new VacancyType { VacancyTypeID = 1, Name = "Estágio" },
                 new VacancyType { VacancyTypeID = 2, Name = "Iniciação Cientifica" },
                 new VacancyType { VacancyTypeID = 3, Name = "Iniciação a docencia" }
@@ -125,7 +125,7 @@ public class ConnectCICAPIContext : DbContext
                 new Vacancy { VacancyID = 1, 
                             Value = 1000f, 
                             StartDate = DateTime.Now, 
-                            Enddate = DateTime.Now.AddDays(30), 
+                            EndDate = DateTime.Now.AddDays(30), 
                             Requirements = "Conhecimento em Java", 
                             Description = "Desenvolvimento de aplicação web", 
                             ProjectTitle = "Sistema de gerenciamento de vendas", 
@@ -138,7 +138,7 @@ public class ConnectCICAPIContext : DbContext
                             StartDate = DateTime.Now, 
                             EndDate = DateTime.Now.AddDays(30), 
                             Requirements = "Conhecimento em Java", 
-                            Descriptiom = "Desenvolvimento de aplicação web", 
+                            Description = "Desenvolvimento de aplicação web", 
                             ProjectTitle = "Sistema de gerenciamento de vendas", 
                             Status = "Aberta", 
                             ProfessorID = 2, 

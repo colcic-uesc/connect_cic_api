@@ -54,11 +54,11 @@ public static class Vacancies
                 return Results.NotFound();
             else{
                 selectedVacancy.Value = vacancy.Value;
-                selectedVacancy.DataInicio = vacancy.StartDate;
-                selectedVacancy.DataFim = vacancy.EndDate;
-                selectedVacancy.Requisitos = vacancy.Requirements;
-                selectedVacancy.Descricao = vacancy.Description;
-                selectedVacancy.TituloProjeto = vacancy.ProjectTitle;
+                selectedVacancy.StartDate = vacancy.StartDate;
+                selectedVacancy.EndDate = vacancy.EndDate;
+                selectedVacancy.Requirements = vacancy.Requirements;
+                selectedVacancy.Description = vacancy.Description;
+                selectedVacancy.ProjectTitle = vacancy.ProjectTitle;
                 selectedVacancy.Status = vacancy.Status;
                 context.SaveChanges();
                 return Results.NoContent();

@@ -4,7 +4,7 @@ public class Vacancy
 {
     public int VacancyID { get; set; }
     public required float Value { get; set; }
-    public required DateTime Startdate { get; set; }
+    public required DateTime StartDate { get; set; }
     public required DateTime EndDate { get; set; } 
     public string? Requirements { get; set; }
     public string? Description { get; set; }
