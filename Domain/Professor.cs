@@ -3,10 +3,10 @@
 public class Professor
 {
     public int ProfessorID { get; set; }
-    public required string Nome { get; set; }
-    public required string EmailContato { get; set; }
-    public required string Departamento { get; set; }
-    public virtual ICollection<Vaga>? Vagas { get; set; }
-    public virtual Usuario? Usuario { get; set; }
-    public virtual int? UsuarioID { get; set; }
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Department { get; set; }
+    public virtual ICollection<Vacancy>? Vacancies { get; set; }
+    public virtual User? User { get; set; }
+    public virtual int? UserID { get; set; }
 }

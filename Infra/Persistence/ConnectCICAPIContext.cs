@@ -1,7 +1,7 @@
-﻿namespace connect_cic_api.Infra.Persistence;
-
-using connect_cic_api.Domain;
+﻿using connect_cic_api.Domain;
 using Microsoft.EntityFrameworkCore;
+
+namespace connect_cic_api.Infra.Persistence;
 
 public class ConnectCICAPIContext : DbContext
 {
@@ -12,16 +12,16 @@ public class ConnectCICAPIContext : DbContext
         Database.EnsureCreated();
       }
 
-    public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<TipoVaga> TipoVagas { get; set; }
-    public DbSet<Vaga> Vagas { get; set; }
-    public DbSet<Aluno> Alunos { get; set; }
-    public DbSet<Professor> Professores { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<VacancyType> VacancyTypes { get; set; }
+    public DbSet<Vacancy> Vacancies { get; set; }
+    public DbSet<Student> Students { get; set; }
+    public DbSet<Professor> Professors { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
         #region SqLite ConnectionString
-        var StringConnection = "Data Source=vagas.db";
+        var StringConnection = "Data Source=vacancies.db";
         optionsBuilder.UseSqlite(StringConnection)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
@@ -31,72 +31,73 @@ public class ConnectCICAPIContext : DbContext
       {
 
             # region Enities Configuration
-            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
-            modelBuilder.Entity<Usuario>().HasKey(c => c.UsuarioID);
-            modelBuilder.Entity<Usuario>()
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<User>().HasKey(c => c.UserID);
+            modelBuilder.Entity<User>()
               .HasOne(u => u.Professor)
-              .WithOne(a => a.Usuario)
-              .HasForeignKey<Professor>(a => a.UsuarioID)
+              .WithOne(a => a.User)
+              .HasForeignKey<Professor>(a => a.UserID)
               .IsRequired(false);
-            modelBuilder.Entity<Usuario>()
-              .HasOne(u => u.Aluno)
-              .WithOne(a => a.Usuario)
-              .HasForeignKey<Aluno>(a => a.UsuarioID)
+            modelBuilder.Entity<Usero>()
+              .HasOne(u => u.Student)
+              .WithOne(a => a.User)
+              .HasForeignKey<Student>(a => a.UserID)
               .IsRequired(false);
+                new User (1, "admin", "admin", UserRules.Admin )
 
-            modelBuilder.Entity<TipoVaga>().ToTable("TiposVaga");
-            modelBuilder.Entity<TipoVaga>().HasKey(c => c.VagaTipoID);
+            modelBuilder.Entity<VacancyType>().ToTable("VacancyTypes");
+            modelBuilder.Entity<VacancyType>().HasKey(c => c.VacancyTypeID);
 
-            modelBuilder.Entity<Aluno>().ToTable("Alunos");
-            modelBuilder.Entity<Aluno>().HasKey(a => a.AlunoID);
+            modelBuilder.Entity<Student>().ToTable("Students");
+            modelBuilder.Entity<Student>().HasKey(a => a.StudentID);
 
 
 
-            modelBuilder.Entity<Professor>().ToTable("Professores");
+            modelBuilder.Entity<Professor>().ToTable("Professors");
             modelBuilder.Entity<Professor>().HasKey(p => p.ProfessorID);
             
 
-            modelBuilder.Entity<Vaga>().ToTable("Vagas");
-            modelBuilder.Entity<Vaga>().HasKey(v => v.VagaID);
-            modelBuilder.Entity<Vaga>().HasOne(v => v.Professor).WithMany(p => p.Vagas).HasForeignKey(v => v.ProfessorID);
-            modelBuilder.Entity<Vaga>().HasOne(v => v.TipoVaga).WithMany(t => t.Vagas).HasForeignKey(v => v.TipoVagaID);
-            modelBuilder.Entity<Vaga>().HasMany(v => v.Alunos).WithMany(a => a.Vagas);
+            modelBuilder.Entity<Vacancy>().ToTable("Vacancies");
+            modelBuilder.Entity<Vacancy>().HasKey(v => v.VacancyID);
+            modelBuilder.Entity<Vacancy>().HasOne(v => v.Professor).WithMany(p => p.Vacancies).HasForeignKey(v => v.ProfessorID);
+            modelBuilder.Entity<Vacancy>().HasOne(v => v.VacancyType).WithMany(t => t.Vacancies).HasForeignKey(v => v.VacancyTypeID);
+            modelBuilder.Entity<Vacancy>().HasMany(v => v.Students).WithMany(a => a.Vacancies);
             #endregion
 
 
             # region seed data
-            modelBuilder.Entity<TipoVaga>().HasData(
-                new TipoVaga { VagaTipoID = 1, Nome = "Estágio" },
-                new TipoVaga { VagaTipoID = 2, Nome = "Iniciação Cientifica" },
-                new TipoVaga { VagaTipoID = 3, Nome = "Iniciação a docencia" }
+            modelBuilder.Entity<Vacancytype>().HasData(
+                new VacancyType { VacancyTypeID = 1, Name = "Estágio" },
+                new VacancyType { VacancyTypeID = 2, Name = "Iniciação Cientifica" },
+                new VacancyType { VacancyTypeID = 3, Name = "Iniciação a docencia" }
             );
 
-            modelBuilder.Entity<Aluno>().HasData(
-                new Aluno { AlunoID = 1, 
-                            Nome = "Everaldina Barbosa", 
-                            EmailContato = "everaldina@gmail.com",
-                            Curso = "Ciencia da Computação",
+            modelBuilder.Entity<Student>().HasData(
+                new Student { StudentID = 1, 
+                            Name = "Everaldina Barbosa", 
+                            Email = "everaldina@gmail.com",
+                            Course = "Ciencia da Computação",
                             CRAA = 9f,
                             Status = "Cursando",
                 },
-                new Aluno { AlunoID = 2, 
-                            Nome = "Lavinia", 
-                            EmailContato = "lavinia@gmail.com",
-                            Curso = "Ciencia da Computação",
+                new Student { StudentID = 2, 
+                            Name = "Lavinia", 
+                            Email = "lavinia@gmail.com",
+                            Course = "Ciencia da Computação",
                             CRAA = 9f,
                             Status = "Cursando",
                 },
-                new Aluno { AlunoID = 3, 
-                            Nome = "ana cristina", 
-                            EmailContato = "ana_cristina@gmail.com",
-                            Curso = "Ciencia da Computação",
+                new Student { StudentID = 3, 
+                            Name = "ana cristina", 
+                            Email = "ana_cristina@gmail.com",
+                            Course = "Ciencia da Computação",
                             CRAA = 9f,
                             Status = "Cursando",
                 },
-                new Aluno { AlunoID = 4, 
-                            Nome = "gabie", 
-                            EmailContato = "gabie@gmail.com",
-                            Curso = "Ciencia da Computação",
+                new Student { StudentID = 4, 
+                            Name = "gabie", 
+                            Email = "gabie@gmail.com",
+                            Course = "Ciencia da Computação",
                             CRAA = 9f,
                             Status = "Cursando",
                 }
@@ -104,55 +105,55 @@ public class ConnectCICAPIContext : DbContext
 
             modelBuilder.Entity<Professor>().HasData(
                 new Professor { ProfessorID = 1, 
-                                Nome = "Helder", 
-                                EmailContato = "helder@uesc.com",
-                                Departamento = "DCET",
+                                Name = "Helder", 
+                                Email = "helder@uesc.com",
+                                Department = "DCET",
                 },
                 new Professor { ProfessorID = 2, 
-                                Nome = "Martha", 
-                                EmailContato = "martinha@uesc.com",
-                                Departamento = "DCET",
+                                Name = "Martha", 
+                                Email = "martinha@uesc.com",
+                                Department = "DCET",
                 },
                 new Professor { ProfessorID = 3, 
-                                Nome = "Bravo", 
-                                EmailContato = "bravo@uesc.com",
-                                Departamento = "DCET",
+                                Name = "Bravo", 
+                                Email = "bravo@uesc.com",
+                                Department = "DCET",
                 }
                 );
 
-            modelBuilder.Entity<Vaga>().HasData(
-                new Vaga { VagaID = 1, 
-                            Valor = 1000f, 
-                            DataInicio = DateTime.Now, 
-                            DataFim = DateTime.Now.AddDays(30), 
-                            Requisitos = "Conhecimento em Java", 
-                            Descricao = "Desenvolvimento de aplicação web", 
-                            TituloProjeto = "Sistema de gerenciamento de vendas", 
+            modelBuilder.Entity<Vacancy>().HasData(
+                new Vacancy { VacancyID = 1, 
+                            Value = 1000f, 
+                            StartDate = DateTime.Now, 
+                            Enddate = DateTime.Now.AddDays(30), 
+                            Requirements = "Conhecimento em Java", 
+                            Description = "Desenvolvimento de aplicação web", 
+                            ProjectTitle = "Sistema de gerenciamento de vendas", 
                             Status = "Aberta", 
                             ProfessorID = 1, 
-                            TipoVagaID = 1
+                            VacancyTypeID = 1
                 },
-                new Vaga { VagaID = 2, 
-                            Valor = 1000f, 
-                            DataInicio = DateTime.Now, 
-                            DataFim = DateTime.Now.AddDays(30), 
-                            Requisitos = "Conhecimento em Java", 
-                            Descricao = "Desenvolvimento de aplicação web", 
-                            TituloProjeto = "Sistema de gerenciamento de vendas", 
+                new Vacancy { VacancyID = 2, 
+                            Value = 1000f, 
+                            StartDate = DateTime.Now, 
+                            EndDate = DateTime.Now.AddDays(30), 
+                            Requirements = "Conhecimento em Java", 
+                            Descriptiom = "Desenvolvimento de aplicação web", 
+                            ProjectTitle = "Sistema de gerenciamento de vendas", 
                             Status = "Aberta", 
                             ProfessorID = 2, 
-                            TipoVagaID = 1
+                            VacancyTypeID = 1
                 },
-                new Vaga { VagaID = 3, 
-                            Valor = 1000f, 
-                            DataInicio = DateTime.Now, 
-                            DataFim = DateTime.Now.AddDays(30), 
-                            Requisitos = "Conhecimento em Java", 
-                            Descricao = "Desenvolvimento de aplicação web", 
-                            TituloProjeto = "Sistema de gerenciamento de vendas", 
+                new Vacancy { VacancyID = 3, 
+                            Value = 1000f, 
+                            StartDate = DateTime.Now, 
+                            EndDate = DateTime.Now.AddDays(30), 
+                            Requirements = "Conhecimento em Java", 
+                            Description = "Desenvolvimento de aplicação web", 
+                            ProjectTitle = "Sistema de gerenciamento de vendas", 
                             Status = "Aberta", 
                             ProfessorID = 3, 
-                            TipoVagaID = 2
+                            VacancyTypeID = 2
                 }
             );
             # endregion

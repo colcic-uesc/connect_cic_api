@@ -14,9 +14,9 @@ public class AuthManager : IAuthManager
 
    public string GenerateJwtToken(string userName, string role)
    {
-      var issuer = "UescCoursesAPI"; //emissor do token
+      var issuer = "connect_cic_api"; //emissor do token
       var audience = "Common"; //destinatário do token
-      var key = "Chave secreta do projeto UescCoursesAPI"; //chave secreta do token
+      var key = "Chave secreta do projeto connect_cic_api"; //chave secreta do token
       //cria uma chave utilizando criptografia simétrica
       var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
       //cria as credenciais do token
