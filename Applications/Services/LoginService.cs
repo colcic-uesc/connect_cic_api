@@ -11,11 +11,7 @@ public interface ILoginService
 public class LoginService : ILoginService
 {
    private readonly IAuthManager _authManager;
-<<<<<<< HEAD
    private readonly ConnectCICAPIContext _context;
-=======
-   private readonly ConnectCICAPIContext  _context;
->>>>>>> 9e754f9ed03a82bfe9ddf0762e089b9244eb5c0f
    public LoginService(IAuthManager authManager, ConnectCICAPIContext context)
    {
       _authManager = authManager;
