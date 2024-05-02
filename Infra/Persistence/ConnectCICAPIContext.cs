@@ -38,12 +38,11 @@ public class ConnectCICAPIContext : DbContext
               .WithOne(a => a.User)
               .HasForeignKey<Professor>(a => a.UserID)
               .IsRequired(false);
-            modelBuilder.Entity<Usero>()
+            modelBuilder.Entity<User>()
               .HasOne(u => u.Student)
               .WithOne(a => a.User)
               .HasForeignKey<Student>(a => a.UserID)
               .IsRequired(false);
-                new User (1, "admin", "admin", UserRules.Admin )
 
             modelBuilder.Entity<VacancyType>().ToTable("VacancyTypes");
             modelBuilder.Entity<VacancyType>().HasKey(c => c.VacancyTypeID);

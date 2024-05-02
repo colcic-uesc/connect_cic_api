@@ -36,7 +36,7 @@ public static class Users
 
             context.Users.Add(user);
             context.SaveChanges();
-            return Results.Created($"/{user.UserId}",user);
+            return Results.Created($"/{user.UserID}",user);
         });
 
         // PUTs
@@ -46,16 +46,16 @@ public static class Users
         [FromBody] UserPostDTO user,
         ConnectCICAPIContext context) =>
         {
-            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserId == id);
+            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserID == id);
 
             if (UserToUpdate == null)
             {
                return Results.NotFound();
             }
 
-            userToUpdate.Update(user.Email, user.Password, user.Rules);
+            UserToUpdate.Update(user.Login, user.Password, user.Rules);
             context.SaveChanges();
-            return Results.Ok(userToUpdate);
+            return Results.Ok(UserToUpdate);
         });
 
         // DELETEs

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using connect_cic_api.API.ViewModels;
 using connect_cic_api.Application.Services;
 using connect_cic_api.Services.DTO;
 
