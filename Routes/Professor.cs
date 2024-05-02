@@ -8,7 +8,7 @@ namespace connect_cic_api.API.Endpoints
     {
         public static void RegisterProfessorsEndpoint(this IEndpointRouteBuilder routes)
         {
-            var professorsRoutes = routes.MapGroup("/professors");
+            var ProfessorsRoutes = routes.MapGroup("/professors");
 
             // GETs
             // /professors - Lista todos os professores
