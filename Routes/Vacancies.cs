@@ -1,4 +1,6 @@
-﻿using connect_cic_api.Infra.Persistence;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using connect_cic_api.Infra.Persistence;
 using connect_cic_api.Domain;
 using Microsoft.EntityFrameworkCore;
 

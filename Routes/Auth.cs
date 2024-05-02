@@ -4,7 +4,6 @@ using connect_cic_api.Services.DTO;
 
 namespace connect_cic_api.API.Endpoints;
 
-
 public static class Auth
 {
    public static void RegisterAuthEndpoints(this IEndpointRouteBuilder routes)

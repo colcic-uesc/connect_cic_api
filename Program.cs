@@ -40,6 +40,10 @@ builder.Services.AddDbContext<ConnectCICAPIContext>();
 
 // Add Validators to DI
 builder.Services.AddScoped<IValidator<UserPostDTO>, UserPostValidator>();
+builder.Services.AddScoped<IValidator<Professor>, ProfessorValidator>();
+builder.Services.AddScoped<IValidator<Student>, StudentValidator>();
+builder.Services.AddScoped<IValidator<Vacancy>, VacancyValidator>();
+builder.Services.AddScoped<IValidator<VacancyType>, VacancyTypeValidator>();
 
 // Add Authenticator Manager to DI
 builder.Services.AddScoped<IAuthManager, AuthManager>();

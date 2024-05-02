@@ -1,3 +1,6 @@
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
 using connect_cic_api.Domain;
 using connect_cic_api.Infra.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +20,22 @@ public static class Students
 
         // Posts
         // /students - cadastra aluno ok
-        StudentsRoutes.MapPost("", (Student student, ConnectCICAPIContext context) =>
+        StudentsRoutes.MapPost("", async (
+        IValidator<Student> validator,
+        [FromBody] Student student, 
+        ConnectCICAPIContext context) =>
         {
+            
+            ValidationResult validationResult = await validator.ValidateAsync(student);
+
+            if (!validationResult.IsValid)
+            {
+               return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
             context.Students.Add(student);
-            context.SaveChangesAsync();
-            return student;
+            context.SaveChanges();
+            return Results.Created($"/{student.UserID}", student);
         });
     
 

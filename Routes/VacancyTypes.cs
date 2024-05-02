@@ -1,4 +1,6 @@
-﻿using connect_cic_api.Domain;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using connect_cic_api.Domain;
 namespace connect_cic_api.API.Endpoints;
 using connect_cic_api.Infra.Persistence;
 
@@ -15,11 +17,21 @@ public static class VacancyTypes
 
         // Posts
         // /vacancy-types - cadastra tipo de vaga
-        VacancyTypesRoutes.MapPost("", (VacancyType vacancyType,ConnectCICAPIContext context) =>
+        VacancyTypesRoutes.MapPost("", async (
+        IValidator<VacancyType> validator,
+        VacancyType vacancyType,
+        ConnectCICAPIContext context) =>
         {
+            ValidationResult validationResult = await validator.ValidateAsync(vacancyType);
+
+            if (!validationResult.IsValid)
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
             context.VacancyTypes.Add(vacancyType);
             context.SaveChanges();
-            return vacancyType;
+            return Results.Created($"/vacancyType/{vacancyType.VacancyTypeID}", vacancyType);
         });
 
         // Puts

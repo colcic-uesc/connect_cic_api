@@ -1,4 +1,8 @@
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
 using connect_cic_api.Domain;
+using connect_cic_api.Services.DTO;
 using connect_cic_api.Infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,14 +49,36 @@ namespace connect_cic_api.API.Endpoints
             // POSTs
             // /professors - Cadastra um novo professor
             // /professors/id/vacancies - cadastra vaga para determinado professor
-            ProfessorsRoutes.MapPost("", (Professor professor, ConnectCICAPIContext context) =>
+            ProfessorsRoutes.MapPost("", async (
+            [FromBody] Professor professor, 
+            IValidator<Professor> validator,
+            ConnectCICAPIContext context) =>
             {
+                ValidationResult validationResult = await validator.ValidateAsync(professor);
+
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
+
                 context.Professors.Add(professor);
                 context.SaveChanges();
                 return Results.Created($"/professors/{professor.ProfessorID}", professor);
             });
 
-            ProfessorsRoutes.MapPost("/{id}/vacancies", (ConnectCICAPIContext context, Vacancy vacancy, int id) => {
+            ProfessorsRoutes.MapPost("/{id}/vacancies", async (
+            IValidator<Vacancy> validator,
+            ConnectCICAPIContext context, 
+            [FromBody] Vacancy vacancy, 
+            int id) => {
+               
+                ValidationResult validationResult = await validator.ValidateAsync(vacancy);
+
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
+
                 vacancy.ProfessorID = id;
                 context.Vacancies.Add(vacancy);
                 context.SaveChanges();

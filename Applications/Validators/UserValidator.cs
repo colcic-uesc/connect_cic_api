@@ -8,15 +8,19 @@ public class UserPostValidator : AbstractValidator<UserPostDTO>
    public UserPostValidator()
    {
       RuleFor(u => u.Login)
-         .NotEmpty().WithMessage("O campo Login é obrigatório")
-         .EmailAddress().WithMessage("O campo Login deve ser um e-mail válido");
+         .NotEmpty().WithMessage("O campo 'Login' é obrigatório.")
+         .EmailAddress().WithMessage("O campo 'Login' deve ser um e-mail válido");
       
       RuleFor(u => u.Password)
-         .NotEmpty().WithMessage("O campo Senha é obrigatório")
-         .MinimumLength(6).WithMessage("O campo Senha deve ter no mínimo 6 caracteres");
-
+         .NotEmpty().WithMessage("O campo 'Password' é obrigatório.")
+         .MinimumLength(6).WithMessage("O campo 'Password' deve ter no mínimo 6 caracteres")
+         .MaximumLength(16).WithMessage("Sua senha não pode exceder 16 caracteres.")
+         .Matches(@"[A-Z]+").WithMessage("Sua senha deve ter pelo menos uma letra maiúscula.")
+         .Matches(@"[a-z]+").WithMessage("Sua senha deve ter pelo menos uma letra minuscula.")
+         .Matches(@"[0-9]+").WithMessage("Sua senha deve ter pelo menos um número.");
+         
       RuleFor(u => u.Rules)
-         .NotEmpty().WithMessage("O campo Regras é obrigatório");
+         .NotEmpty().WithMessage("O campo 'Rules' é obrigatório");
          
    }
 }
