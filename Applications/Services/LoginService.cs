@@ -11,8 +11,8 @@ public interface ILoginService
 public class LoginService : ILoginService
 {
    private readonly IAuthManager _authManager;
-   private readonly UescCourseAPIContext _context;
-   public LoginService(IAuthManager authManager, UescCourseAPIContext context)
+   private readonly ConnectCICAPIContext  _context;
+   public LoginService(IAuthManager authManager, ConnectCICAPIContext context)
    {
       _authManager = authManager;
       _context = context;
