@@ -9,7 +9,7 @@ public class User
     public virtual int? StudentID {get; set;}
     public virtual Professor? Professor {get; set;}
     public virtual int? ProfessorID {get; set;}
-    private string _password;
+    private string? _password;
     public string? Password { 
         get => _password;
         private set 
