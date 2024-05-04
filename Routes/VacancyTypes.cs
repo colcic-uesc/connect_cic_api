@@ -1,28 +1,37 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using connect_cic_api.Domain;
-namespace connect_cic_api.API.Endpoints;
+using connect_cic_api.API.Endpoints;
 using connect_cic_api.Infra.Persistence;
 
 public static class VacancyTypes
 {
-    public static void RegisterVacancyTypesEndpoint (this IEndpointRouteBuilder routes){
-        var VacancyTypesRoutes = routes.MapGroup("/vacancy-types");
+    public static void RegisterVacancyTypesEndpoint(this IEndpointRouteBuilder routes)
+    {
+        var vacancyTypesRoutes = routes.MapGroup("/vacancy-types");
 
         // Gets
         // /vacancy-types - lista tipos de vagas
         // /vacancy-types/id - um tipo de vaga especifico
-        VacancyTypesRoutes.MapGet("", (ConnectCICAPIContext context) => context.VacancyTypes.ToList());
-        VacancyTypesRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id));
+        vacancyTypesRoutes.MapGet("", (ConnectCICAPIContext context) =>
+        {
+            return Results.Ok(context.VacancyTypes.ToList());
+        });
+
+        vacancyTypesRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) =>
+        {
+            var vacancyType = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
+            return vacancyType != null ? Results.Ok(vacancyType) : Results.NotFound();
+        });
 
         // Posts
         // /vacancy-types - cadastra tipo de vaga
-        VacancyTypesRoutes.MapPost("", async (
+        vacancyTypesRoutes.MapPost("", (
         IValidator<VacancyType> validator,
         VacancyType vacancyType,
         ConnectCICAPIContext context) =>
         {
-            ValidationResult validationResult = await validator.ValidateAsync(vacancyType);
+            ValidationResult validationResult = validator.Validate(vacancyType);
 
             if (!validationResult.IsValid)
             {
@@ -36,32 +45,32 @@ public static class VacancyTypes
 
         // Puts
         // /vacancy-types/id - atualiza tipo de vaga
-        VacancyTypesRoutes.MapPut("/{id}", (int id, VacancyType vacancyType, ConnectCICAPIContext context) =>
+        vacancyTypesRoutes.MapPut("/{id}", (int id, VacancyType vacancyType, ConnectCICAPIContext context) =>
         {
-            var VacancyTypeToUpdate = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
+            var vacancyTypeToUpdate = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
             
-            if(VacancyTypeToUpdate is not null){
-                VacancyTypeToUpdate.Name = vacancyType.Name;
+            if (vacancyTypeToUpdate is not null)
+            {
+                vacancyTypeToUpdate.Name = vacancyType.Name;
                 context.SaveChanges();
             }
             
-            return VacancyTypeToUpdate;
+            return vacancyTypeToUpdate != null ? Results.Ok(vacancyTypeToUpdate) : Results.NotFound();
         });
 
         // Deletes
         // /vacancy-types/id - deleta tipo de vaga
-        VacancyTypesRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
+        vacancyTypesRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
-            var VacancyTypeToDelete = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
+            var vacancyTypeToDelete = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
             
-            if(VacancyTypeToDelete is not null){
-                context.VacancyTypes.Remove(VacancyTypeToDelete);
+            if (vacancyTypeToDelete is not null)
+            {
+                context.VacancyTypes.Remove(vacancyTypeToDelete);
                 context.SaveChanges();
             }
             
-            return VacancyTypeToDelete;
+            return vacancyTypeToDelete != null ? Results.NoContent() : Results.NotFound();
         });
     }   
-
 }
-

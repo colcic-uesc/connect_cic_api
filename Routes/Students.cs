@@ -9,73 +9,78 @@ namespace connect_cic_api.API.Endpoints;
 
 public static class Students
 {
-    public static void RegisterStudentsEndpoint(this IEndpointRouteBuilder routes){
-        
-        var StudentsRoutes = routes.MapGroup("/students");
-        // Gets
-        //  /students - lista alunos  ok
-        //  /students/id - um aluno especifico
-        StudentsRoutes.MapGet("", (ConnectCICAPIContext context) => context.Students.ToList());
-        StudentsRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) => context.Students.FirstOrDefault(c => c.StudentID == id));
+    public static void RegisterStudentsEndpoint(this IEndpointRouteBuilder routes)
+    {
+        var studentsRoutes = routes.MapGroup("/students");
 
-        // Posts
-        // /students - cadastra aluno ok
-        StudentsRoutes.MapPost("", async (
+        studentsRoutes.MapGet("", (ConnectCICAPIContext context) =>
+        {
+            var students = context.Students.ToList();
+            return Results.Ok(students);
+        });
+
+        studentsRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) =>
+        {
+            var student = context.Students.Find(id);
+            if (student == null)
+                return Results.NotFound();
+            return Results.Ok(student);
+        });
+
+        studentsRoutes.MapPost("", (
         IValidator<Student> validator,
-        [FromBody] Student student, 
+        [FromBody] Student student,
         ConnectCICAPIContext context) =>
         {
-            
-            ValidationResult validationResult = await validator.ValidateAsync(student);
+            ValidationResult validationResult = validator.Validate(student);
 
             if (!validationResult.IsValid)
             {
-               return Results.ValidationProblem(validationResult.ToDictionary());
+                return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
             context.Students.Add(student);
             context.SaveChanges();
-            return Results.Created($"/{student.UserID}", student);
-        });
-    
-
-        // Puts
-        // /students/id - atualiza aluno ok
-        StudentsRoutes.MapPut("/{id}", (int id, Student studentsrout, ConnectCICAPIContext context) => 
-        {
-         
-            var StudentsToUpdate = context.Students.FirstOrDefault(c => c.StudentID == id);
-
-            if(StudentsToUpdate is not null){
-            
-                StudentsToUpdate.Name = studentsrout.Name; // editar o if
-                StudentsToUpdate.Email = studentsrout.Email;
-                StudentsToUpdate.Course = studentsrout.Course;
-                StudentsToUpdate.CRAA = studentsrout.CRAA;
-                StudentsToUpdate.Status = studentsrout.Status;
-            
-                context.SaveChanges();
-            }
-
-            return StudentsToUpdate;
+            return Results.Created($"/students/{student.UserID}", student);
         });
 
-        // Deletes
-        // /students/id - deleta aluno ok
-        StudentsRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
+        studentsRoutes.MapPut("/{id}", (int id, Student updatedStudent, IValidator<Student> validator, ConnectCICAPIContext context) =>
         {
-            var StudentsToDelete = context.Students.FirstOrDefault(c => c.StudentID == id);
+            var studentToUpdate = context.Students.Find(id);
 
-            if (StudentsToDelete == null)
+            if (studentToUpdate == null)
+            {
                 return Results.NotFound();
-            else{
-                context.Students.Remove(StudentsToDelete);
-                context.SaveChanges();
-                return Results.NoContent();
             }
+
+            studentToUpdate.Name = updatedStudent.Name;
+            studentToUpdate.Email = updatedStudent.Email;
+            studentToUpdate.Course = updatedStudent.Course;
+            studentToUpdate.CRAA = updatedStudent.CRAA;
+            studentToUpdate.Status = updatedStudent.Status;
+
+            ValidationResult validationResult = validator.Validate(studentToUpdate);
+            if (!validationResult.IsValid)
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
+            context.SaveChanges();
+            return Results.Ok(studentToUpdate);
         });
 
+        studentsRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
+        {
+            var studentToDelete = context.Students.Find(id);
+
+            if (studentToDelete == null)
+            {
+                return Results.NotFound();
+            }
+
+            context.Students.Remove(studentToDelete);
+            context.SaveChanges();
+            return Results.NoContent();
+        });
     }
 }
-
- 
