@@ -63,5 +63,6 @@ app.RegisterVacancyTypesEndpoint();
 app.RegisterVacanciesEndpoint();
 app.RegisterStudentsEndpoint();
 app.RegisterProfessorsEndpoint();
+app.RegisterAuthEndpoints();
 
 app.Run();

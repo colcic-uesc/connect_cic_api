@@ -40,47 +40,56 @@ public static class Vacancies
         // POST
         vacanciesRoutes.MapPost("/{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>
         {
-            var vacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(v => v.VacancyID == vacancyID);
-            var student = context.Students.Find(studentID);
+            var selectedVacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(c => c.VacancyID == vacancyID);
+            var selectedStudents = context.Students.FirstOrDefault(a => a.StudentID == studentID);
 
-            if (vacancy == null || student == null)
+            if (selectedVacancy == null || selectedStudents == null) 
                 return Results.NotFound();
+            
+            if (selectedVacancy.Students == null)
+                selectedVacancy.Students = new List<Student>();
 
-            vacancy.Students ??= new List<Student>();
-            vacancy.Students.Add(student);
+
+            selectedVacancy.Students.Add(selectedStudents);
             context.SaveChanges();
-            return Results.Created($"/vacancies/{vacancyID}/students", student);
+            return Results.Created($"/vacancies/{vacancyID}/students", selectedStudents);
         });
+
 
         // PUT
-        vacanciesRoutes.MapPut("/{id}", (ConnectCICAPIContext context, Vacancy updatedVacancy, int id) =>
-        {
-            var vacancy = context.Vacancies.Find(id);
+        // /vacancies/id - atualiza vaga especifica
+        vacanciesRoutes.MapPut("/{id}", (ConnectCICAPIContext context, Vacancy vacancy, int id) => {
 
-            if (vacancy == null)
+            var selectedVacancy = context.Vacancies.FirstOrDefault(c => c.VacancyID == id);
+
+            if (selectedVacancy == null) 
                 return Results.NotFound();
-
-            vacancy.Value = updatedVacancy.Value;
-            vacancy.StartDate = updatedVacancy.StartDate;
-            vacancy.EndDate = updatedVacancy.EndDate;
-            vacancy.Requirements = updatedVacancy.Requirements;
-            vacancy.Description = updatedVacancy.Description;
-            vacancy.ProjectTitle = updatedVacancy.ProjectTitle;
-            vacancy.Status = updatedVacancy.Status;
-            context.SaveChanges();
-            return Results.NoContent();
+            else{
+                selectedVacancy.Value = vacancy.Value;
+                selectedVacancy.StartDate = vacancy.StartDate;
+                selectedVacancy.EndDate = vacancy.EndDate;
+                selectedVacancy.Requirements = vacancy.Requirements;
+                selectedVacancy.Description = vacancy.Description;
+                selectedVacancy.ProjectTitle = vacancy.ProjectTitle;
+                selectedVacancy.Status = vacancy.Status;
+                context.SaveChanges();
+                return Results.NoContent();
+            }
         });
 
+
         // DELETE
-        vacanciesRoutes.MapDelete("/{id}", (ConnectCICAPIContext context, int id) =>
-        {
-            var vacancy = context.Vacancies.Find(id);
+        // /vacancies/id - deleta vaga especifica
+        // /vacancies/vacancyID/students/studentID - aluno retira interesse na vaga
+        vacanciesRoutes.MapDelete("/{id}", (ConnectCICAPIContext context, int id) => {
+            var vacancy = context.Vacancies.FirstOrDefault(c => c.VacancyID == id);
             if (vacancy == null)
                 return Results.NotFound();
-
-            context.Vacancies.Remove(vacancy);
-            context.SaveChanges();
-            return Results.NoContent();
+            else{
+                context.Vacancies.Remove(vacancy);
+                context.SaveChanges();
+                return Results.NoContent();
+            }
         });
 
         vacanciesRoutes.MapDelete("{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>

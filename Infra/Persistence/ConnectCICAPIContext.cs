@@ -155,6 +155,10 @@ public class ConnectCICAPIContext : DbContext
                             VacancyTypeID = 2
                 }
             );
+
+            modelBuilder.Entity<User>().HasData(
+                  new User (1, "admin", "admin", UserRules.Admin )
+            );
             # endregion
       }
 }

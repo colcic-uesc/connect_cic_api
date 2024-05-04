@@ -14,13 +14,26 @@ public static class Users
         // GETs
         // /users - lista usuarios
         // /users/id - um usuario especifico
+        // /users/admins - lista usuarios admin
+        // /users/admins/id - um usuario admin especifico
+        // /users/students - lista usuarios estudantes
+        // /users/students/id - um usuario estudante especifico
+        // /users/professors - lista usuarios professores
+        // /users/professors/id - um usuario professor especifico
         UsersRoutes.MapGet("", (ConnectCICAPIContext context) => context.Users.ToList());
-
         UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id));
+        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Admin).ToList());
+        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin));
+        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Student).ToList());
+        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student));
+        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Professor).ToList());
+        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor));
 
         // POSTs
-        // /users - cadastra usuario
-        UsersRoutes.MapPost("", async (
+        // /users/admins - cadastra usuario admin
+        // /users/students - cadastra usuario estudante
+        // /users/professors - cadastra usuario professor
+        UsersRoutes.MapPost("/admins", async (
         IValidator<UserPostDTO> validator,
         [FromBody] UserPostDTO userPost,
         ConnectCICAPIContext context) =>
@@ -32,7 +45,74 @@ public static class Users
                return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
+            if (userPost.Rules != UserRules.Admin){
+                return Results.BadRequest("Usuario deve ser um admin");
+            }
+
             var user = new User(userPost.Login, userPost.Password, userPost.Rules);
+
+            context.Users.Add(user);
+            context.SaveChanges();
+            return Results.Created($"/{user.UserID}",user);
+        });
+
+
+        UsersRoutes.MapPost("/students", async (
+        IValidator<UserPostDTO> validator,
+        [FromBody] UserPostDTO userPost,
+        ConnectCICAPIContext context) =>
+        {
+            ValidationResult validationResult = await validator.ValidateAsync(userPost);
+
+            if (!validationResult.IsValid)
+            {
+               return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
+            if (userPost.Rules != UserRules.Student){
+                return Results.BadRequest("Usuario deve ser um estudante");
+            }
+
+            var Student = context.Students.FirstOrDefault(s => s.StudentID == userPost.StudentID);
+
+            if (Student == null){
+                return Results.NotFound("Estudante não encontrado");
+            }
+
+            var user = new User(userPost.Login, userPost.Password, userPost.Rules);
+            user.StudentID = userPost.StudentID;
+    
+
+            context.Users.Add(user);
+            context.SaveChanges();
+            return Results.Created($"/{user.UserID}",user);
+        });
+
+
+        UsersRoutes.MapPost("/profesors", async (
+        IValidator<UserPostDTO> validator,
+        [FromBody] UserPostDTO userPost,
+        ConnectCICAPIContext context) =>
+        {
+            ValidationResult validationResult = await validator.ValidateAsync(userPost);
+
+            if (!validationResult.IsValid)
+            {
+               return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
+            if (userPost.Rules != UserRules.Professor){
+                return Results.BadRequest("Usuario deve ser um professor");
+            }
+
+            var Professor = context.Professors.FirstOrDefault(s => s.ProfessorID == userPost.ProfessorID);
+
+            if (Professor == null){
+                return Results.NotFound("Professor não encontrado");
+            }
+
+            var user = new User(userPost.Login, userPost.Password, userPost.Rules);
+            user.ProfessorID = Professor.ProfessorID;
 
             context.Users.Add(user);
             context.SaveChanges();
@@ -41,6 +121,8 @@ public static class Users
 
         // PUTs
         // /users/id - atualiza usuario
+        // /users/professors/id - atualiza usuario professor
+        // /users/students/id - atualiza usuario estudante
         UsersRoutes.MapPut("/{id}", (
         int id,
         [FromBody] UserPostDTO user,
@@ -51,6 +133,65 @@ public static class Users
             if (UserToUpdate == null)
             {
                return Results.NotFound();
+            }
+
+            if (UserToUpdate.Rules != user.Rules){
+                return Results.BadRequest("Não é possivel trocar o tipo de usuario");
+            }
+
+            UserToUpdate.Update(user.Login, user.Password, user.Rules);
+            context.SaveChanges();
+            return Results.Ok(UserToUpdate);
+        });
+
+        UsersRoutes.MapPut("/professors/{id}", (
+        int id,
+        [FromBody] UserPostDTO user,
+        ConnectCICAPIContext context) =>
+        {
+            var Professor = context.Professors.FirstOrDefault(p => p.ProfessorID == id);
+
+            if (Professor == null)
+            {
+               return Results.NotFound();
+            }
+
+
+            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserID == Professor.UserID);
+
+            if (UserToUpdate == null)
+            {
+               return Results.NotFound();
+            }
+            if (UserToUpdate.Rules != user.Rules){
+                return Results.BadRequest("Não é possivel trocar o tipo de usuario");
+            }
+
+            UserToUpdate.Update(user.Login, user.Password, user.Rules);
+            context.SaveChanges();
+            return Results.Ok(UserToUpdate);
+        });
+
+        UsersRoutes.MapPut("/students/{id}", (
+        int id,
+        [FromBody] UserPostDTO user,
+        ConnectCICAPIContext context) =>
+        {
+            var Student = context.Students.FirstOrDefault(s => s.StudentID == id);
+
+            if (Student == null)
+            {
+               return Results.NotFound();
+            }
+
+            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserID == Student.UserID);
+
+            if (UserToUpdate == null)
+            {
+               return Results.NotFound();
+            }
+            if (UserToUpdate.Rules != user.Rules){
+                return Results.BadRequest("Não é possivel trocar o tipo de usuario");
             }
 
             UserToUpdate.Update(user.Login, user.Password, user.Rules);
