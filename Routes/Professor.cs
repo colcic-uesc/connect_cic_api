@@ -35,6 +35,7 @@ namespace connect_cic_api.API.Endpoints
 
                 return Results.Ok(professor);
             });
+            
             ProfessorsRoutes.MapGet("/{id}/vacancies", (ConnectCICAPIContext context, int id) => {
                 var professor = context.Professors.FirstOrDefault(p => p.ProfessorID == id);
 
