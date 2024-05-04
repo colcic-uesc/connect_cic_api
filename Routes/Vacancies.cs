@@ -69,7 +69,7 @@ public static class Vacancies
 
 
         // DELETE
-        // vacancies/id - deleta vaga especifica
+        // /vacancies/id - deleta vaga especifica
         // /vacancies/vacancyID/students/studentID - aluno retira interesse na vaga
         VacanciesRoutes.MapDelete("/{id}", (ConnectCICAPIContext context, int id) => {
             var vacancy = context.Vacancies.FirstOrDefault(c => c.VacancyID == id);
