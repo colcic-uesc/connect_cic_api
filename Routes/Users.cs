@@ -20,14 +20,14 @@ public static class Users
         // /users/students/id - um usuario estudante especifico
         // /users/professors - lista usuarios professores
         // /users/professors/id - um usuario professor especifico
-        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => context.Users.ToList());
-        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id));
-        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Admin).ToList());
-        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin));
-        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Student).ToList());
-        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student));
-        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => context.Users.Where(u => u.Rules == UserRules.Professor).ToList());
-        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor));
+        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => Results.Ok(context.Users.ToList()));
+        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.Find(id)));
+        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Admin).ToList()));
+        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin)));
+        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList()));
+        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student)));
+        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList()));
+        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor)));
 
         // POSTs
         // /users/admins - cadastra usuario admin
