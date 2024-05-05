@@ -41,7 +41,7 @@ public static class VacancyTypes
             context.VacancyTypes.Add(vacancyType);
             context.SaveChanges();
             return Results.Created($"/vacancyType/{vacancyType.VacancyTypeID}", vacancyType);
-        });
+        }).RequireAuthorization("AdminOnly");
 
         // Puts
         // /vacancy-types/id - atualiza tipo de vaga
@@ -56,7 +56,7 @@ public static class VacancyTypes
             }
             
             return vacancyTypeToUpdate != null ? Results.Ok(vacancyTypeToUpdate) : Results.NotFound();
-        });
+        }).RequireAuthorization("AdminOnly");
 
         // Deletes
         // /vacancy-types/id - deleta tipo de vaga
@@ -71,6 +71,6 @@ public static class VacancyTypes
             }
             
             return vacancyTypeToDelete != null ? Results.NoContent() : Results.NotFound();
-        });
+        }).RequireAuthorization("AdminOnly");
     }   
 }
