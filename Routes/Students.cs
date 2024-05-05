@@ -17,7 +17,7 @@ public static class Students
         {
             var students = context.Students.ToList();
             return Results.Ok(students);
-        });
+        }).RequireAuthorization("CanViewStudents");
 
         studentsRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) =>
         {
@@ -25,7 +25,7 @@ public static class Students
             if (student == null)
                 return Results.NotFound();
             return Results.Ok(student);
-        });
+        }).RequireAuthorization("CanViewStudentDetails"); 
 
         studentsRoutes.MapPost("", (
         IValidator<Student> validator,
@@ -67,7 +67,7 @@ public static class Students
 
             context.SaveChanges();
             return Results.Ok(studentToUpdate);
-        });
+        }).RequireAuthorization("CanModifyStudent");
 
         studentsRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
@@ -81,6 +81,6 @@ public static class Students
             context.Students.Remove(studentToDelete);
             context.SaveChanges();
             return Results.NoContent();
-        });
+        }).RequireAuthorization("CanModifyStudent");
     }
 }

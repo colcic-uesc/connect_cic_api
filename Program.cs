@@ -33,7 +33,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Chave secreta do projeto connect_cic_api"))
         };
     });
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    // acessar a lista de estudantes -  admins e professores
+    options.AddPolicy("CanViewStudents", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
+
+    // acessar detalhes de um estudante específico -  usuário autenticado
+    options.AddPolicy("CanViewStudentDetails", policy =>
+        policy.RequireAuthenticatedUser());
+
+    // modificar um estudante específico -  admins e o próprio estudante
+    options.AddPolicy("CanModifyStudent", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || (context.User.IsInRole("Student") && context.User.HasClaim("student_id", context.Resource.ToString()))));
+});
+
 
 // Add AppContext to DI
 builder.Services.AddDbContext<ConnectCICAPIContext>();
