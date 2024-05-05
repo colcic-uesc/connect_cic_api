@@ -60,8 +60,8 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || context.User.IsInRole("Professor"))); 
 
-    // ver vagas
-     options.AddPolicy("CanViewVacancy", policy =>
+    // ver alunos interessados nas vagas
+     options.AddPolicy("CanViewVacancyInterests", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
 
