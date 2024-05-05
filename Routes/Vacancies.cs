@@ -13,13 +13,15 @@ public static class Vacancies
     {
         var vacanciesRoutes = routes.MapGroup("/vacancies");
 
-        // GET
+        // GETs
+        //lista vagas
         vacanciesRoutes.MapGet("", (ConnectCICAPIContext context) =>
         {
             var vacancies = context.Vacancies.ToList();
             return Results.Ok(vacancies);
         });
 
+        // lista uma vaga    
         vacanciesRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) =>
         {
             var vacancy = context.Vacancies.Find(id);
@@ -28,6 +30,7 @@ public static class Vacancies
             return Results.Ok(vacancy);
         });
 
+        // ver alunos interessados na vaga
         vacanciesRoutes.MapGet("/{id}/students", (ConnectCICAPIContext context, int id) =>
         {
             var vacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(v => v.VacancyID == id);
@@ -35,9 +38,10 @@ public static class Vacancies
                 return Results.NotFound();
 
             return Results.Ok(vacancy.Students?.ToList());
-        });
+        }).RequireAuthorization("CanViewVacancyInterests");
 
-        // POST
+        // POSTs
+        // adicionar aluno a uma vaga
         vacanciesRoutes.MapPost("/{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>
         {
             var selectedVacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(c => c.VacancyID == vacancyID);
@@ -53,7 +57,7 @@ public static class Vacancies
             selectedVacancy.Students.Add(selectedStudents);
             context.SaveChanges();
             return Results.Created($"/vacancies/{vacancyID}/students", selectedStudents);
-        });
+        }).RequireAuthorization("CanAddOrRemoveInterest");
 
 
         // PUT
@@ -75,7 +79,7 @@ public static class Vacancies
                 context.SaveChanges();
                 return Results.NoContent();
             }
-        });
+        }).RequireAuthorization("CanModifyVacancy");
 
 
         // DELETE
@@ -90,7 +94,7 @@ public static class Vacancies
                 context.SaveChanges();
                 return Results.NoContent();
             }
-        });
+        }).RequireAuthorization("CanModifyVacancy");
 
         vacanciesRoutes.MapDelete("{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>
         {
@@ -103,6 +107,6 @@ public static class Vacancies
             vacancy.Students?.Remove(student);
             context.SaveChanges();
             return Results.NoContent();
-        });
+        }).RequireAuthorization("CanAddOrRemoveInterest");
     }
 }
