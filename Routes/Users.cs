@@ -20,14 +20,14 @@ public static class Users
         // /users/students/id - um usuario estudante especifico
         // /users/professors - lista usuarios professores
         // /users/professors/id - um usuario professor especifico
-        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => Results.Ok(context.Users.ToList()));
-        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.Find(id)));
-        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Admin).ToList()));
-        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin)));
-        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList()));
-        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student)));
-        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList()));
-        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor)));
+        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => Results.Ok(context.Users.ToList())).RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.Find(id))).RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Admin).ToList())).RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin))).RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList())).RequireAuthorization("AdminOnly").RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student))).RequireAuthorization("AdminOrStudent");
+        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList())).RequireAuthorization("AdminOnly");
+        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor))).RequireAuthorization("AdminOrProfessor");
 
         // POSTs
         // /users/admins - cadastra usuario admin
@@ -54,7 +54,7 @@ public static class Users
             context.Users.Add(user);
             context.SaveChanges();
             return Results.Created($"/{user.UserID}",user);
-        });
+        }).RequireAuthorization("AdminOnly");
 
 
         UsersRoutes.MapPost("/students", async (
@@ -142,7 +142,7 @@ public static class Users
             UserToUpdate.Update(user.Login, user.Password, user.Rules);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
-        });
+        }).RequireAuthorization("AdminOnly");
 
         UsersRoutes.MapPut("/professors/{id}", (
         int id,
@@ -170,7 +170,7 @@ public static class Users
             UserToUpdate.Update(user.Login, user.Password, user.Rules);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
-        });
+        }).RequireAuthorization("AdminOrProfessor");
 
         UsersRoutes.MapPut("/students/{id}", (
         int id,
@@ -197,7 +197,7 @@ public static class Users
             UserToUpdate.Update(user.Login, user.Password, user.Rules);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
-        });
+        }).RequireAuthorization("AdminOrStudent");
 
         // DELETEs
         // /users/id - deleta usuario
@@ -213,7 +213,7 @@ public static class Users
             context.Users.Remove(UserToDelete);
             context.SaveChanges();
             return Results.Ok(UserToDelete);
-        });
+        }).RequireAuthorization("AdminOnly");
     }   
 
 }

@@ -36,6 +36,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
+    // Apenas admin 
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
     // acessar a lista de estudantes -  admins e professores
     options.AddPolicy("CanViewStudents", policy =>
         policy.RequireAssertion(context =>
@@ -74,6 +77,17 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanAddOrRemoveInterest", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || context.User.IsInRole("Student")));              
+
+    // ver dados de um aluno ou atualizar um aluno
+    options.AddPolicy("AdminOrStudent", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Student")));
+    
+    // ver dados de um professor ou atualizar um professor
+    options.AddPolicy("AdminOrProfessor", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
+
 });
 
 
