@@ -84,7 +84,7 @@ namespace connect_cic_api.API.Endpoints
                 context.Vacancies.Add(vacancy);
                 context.SaveChanges();
                 return Results.Created($"/vacancies/{vacancy.VacancyID}", vacancy);
-            });
+            }).RequireAuthorization("CanAddVacancy");
 
             // PUTs
             // /professors/{id} - Atualiza um professor existente
@@ -105,7 +105,7 @@ namespace connect_cic_api.API.Endpoints
 
                 context.SaveChanges();
                 return Results.NoContent();
-            });
+            }).RequireAuthorization("CanModifyProfessor");
 
 
             // DELETE: /professors/{id} - Deleta um professor
@@ -121,7 +121,7 @@ namespace connect_cic_api.API.Endpoints
                 context.Professors.Remove(professor);
                 context.SaveChanges();
                 return Results.NoContent();
-            });
+            }).RequireAuthorization("CanModifyProfessor");
         }
     }
 }

@@ -49,6 +49,17 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanModifyStudent", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || (context.User.IsInRole("Student") && context.User.HasClaim("student_id", context.Resource.ToString()))));
+    
+    // cadastrar vaga 
+    options.AddPolicy("CanAddVancancy", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
+
+    // excluir um professor / atualizar professor
+    options.AddPolicy("CanModifyProfessor", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor"))); 
+                  
 });
 
 
