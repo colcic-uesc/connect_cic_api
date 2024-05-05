@@ -51,7 +51,7 @@ builder.Services.AddAuthorization(options =>
     // modificar um estudante específico -  admins e o próprio estudante
     options.AddPolicy("CanModifyStudent", policy =>
         policy.RequireAssertion(context =>
-            context.User.IsInRole("Admin") || (context.User.IsInRole("Student") && context.User.HasClaim("student_id", context.Resource.ToString()))));
+            context.User.IsInRole("Admin") || (context.User.IsInRole("Student") && context.User.HasClaim("student_id", (context.Resource as Student)?.StudentID.ToString() ?? string.Empty))));
     
     // cadastrar vaga 
     options.AddPolicy("CanAddVancancy", policy =>
