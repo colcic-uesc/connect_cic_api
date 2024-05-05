@@ -59,7 +59,21 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanModifyProfessor", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || context.User.IsInRole("Professor"))); 
-                  
+
+    // ver vagas
+     options.AddPolicy("CanViewVacancy", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
+
+    // atualizar vagas (conteúdo)
+    options.AddPolicy("CanModifyVacancy", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
+
+    // adicionar interesse em uma vaga ou remover
+    options.AddPolicy("CanAddOrRemoveInterest", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Student")));              
 });
 
 
