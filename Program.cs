@@ -30,7 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidIssuer = "connect_cic_api",
             ValidAudience = "Common",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Chave secreta do projeto connect_cic_api"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Sei que. Voce vai querer ser. Uma de nos!"))
         };
     });
 
@@ -51,7 +51,7 @@ builder.Services.AddAuthorization(options =>
     // modificar um estudante específico -  admins e o próprio estudante
     options.AddPolicy("CanModifyStudent", policy =>
         policy.RequireAssertion(context =>
-            context.User.IsInRole("Admin") || (context.User.IsInRole("Student") && context.User.HasClaim("student_id", (context.Resource as Student)?.StudentID.ToString() ?? string.Empty))));
+            context.User.IsInRole("Admin") || context.User.IsInRole("Student")));
     
     // cadastrar vaga 
     options.AddPolicy("CanAddVancancy", policy =>

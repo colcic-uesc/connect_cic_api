@@ -13,12 +13,15 @@ public static class Students
     {
         var studentsRoutes = routes.MapGroup("/students");
 
+        # region GETs
+        // /students - lista estudantes
         studentsRoutes.MapGet("", (ConnectCICAPIContext context) =>
         {
             var students = context.Students.ToList();
             return Results.Ok(students);
         }).RequireAuthorization("CanViewStudents");
 
+        // /students/id - um estudante especifico
         studentsRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) =>
         {
             var student = context.Students.Find(id);
@@ -26,7 +29,10 @@ public static class Students
                 return Results.NotFound();
             return Results.Ok(student);
         }).RequireAuthorization("CanViewStudentDetails"); 
+        # endregion
 
+        # region POSTs
+        // /students - registra um estudante
         studentsRoutes.MapPost("", (
         IValidator<Student> validator,
         [FromBody] Student student,
@@ -43,7 +49,10 @@ public static class Students
             context.SaveChanges();
             return Results.Created($"/students/{student.UserID}", student);
         });
+        # endregion
 
+        # region PUTs
+        // /students/id - atualiza um estudante
         studentsRoutes.MapPut("/{id}", (int id, Student updatedStudent, IValidator<Student> validator, ConnectCICAPIContext context) =>
         {
             var studentToUpdate = context.Students.Find(id);
@@ -68,7 +77,11 @@ public static class Students
             context.SaveChanges();
             return Results.Ok(studentToUpdate);
         }).RequireAuthorization("CanModifyStudent");
+        # endregion
 
+
+        # region DELETEs
+        // /students/id - deleta um estudante
         studentsRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
             var studentToDelete = context.Students.Find(id);
@@ -82,5 +95,6 @@ public static class Students
             context.SaveChanges();
             return Results.NoContent();
         }).RequireAuthorization("CanModifyStudent");
+        # endregion
     }
 }

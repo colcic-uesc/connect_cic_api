@@ -14,16 +14,15 @@ namespace connect_cic_api.API.Endpoints
         {
             var ProfessorsRoutes = routes.MapGroup("/professors");
 
-            // GETs
+            # region GETs
             // /professors - Lista todos os professores
-            // /professors/{id} - Retorna um professor específico
-            // /professors/{id}/vagas - lista as vagas de um professor
             ProfessorsRoutes.MapGet("", (ConnectCICAPIContext context) =>
             {
                 var professors = context.Professors.ToList();
                 return Results.Ok(professors);
             });
 
+            // /professors/{id} - Retorna um professor específico
             ProfessorsRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) =>
             {
                 var professor = context.Professors.FirstOrDefault(p => p.ProfessorID == id);
@@ -35,7 +34,8 @@ namespace connect_cic_api.API.Endpoints
 
                 return Results.Ok(professor);
             });
-            
+
+            // /professors/{id}/vagas - lista as vagas de um professor
             ProfessorsRoutes.MapGet("/{id}/vacancies", (ConnectCICAPIContext context, int id) => {
                 var professor = context.Professors.FirstOrDefault(p => p.ProfessorID == id);
 
@@ -46,10 +46,10 @@ namespace connect_cic_api.API.Endpoints
                     return Results.Ok(vacancies);
                 }
             });
+            # endregion
 
-            // POSTs
+            # region POSTs
             // /professors - Cadastra um novo professor
-            // /professors/id/vacancies - cadastra vaga para determinado professor
             ProfessorsRoutes.MapPost("", async (
             [FromBody] Professor professor, 
             IValidator<Professor> validator,
@@ -67,6 +67,7 @@ namespace connect_cic_api.API.Endpoints
                 return Results.Created($"/professors/{professor.ProfessorID}", professor);
             });
 
+            // /professors/id/vacancies - cadastra vaga para determinado professor
             ProfessorsRoutes.MapPost("/{id}/vacancies", async (
             IValidator<Vacancy> validator,
             ConnectCICAPIContext context, 
@@ -85,8 +86,9 @@ namespace connect_cic_api.API.Endpoints
                 context.SaveChanges();
                 return Results.Created($"/vacancies/{vacancy.VacancyID}", vacancy);
             }).RequireAuthorization("CanAddVacancy");
+            # endregion
 
-            // PUTs
+            # region PUTs
             // /professors/{id} - Atualiza um professor existente
             ProfessorsRoutes.MapPut("/{id}",  (int id, Professor professorData, ConnectCICAPIContext context) =>
             {
@@ -106,9 +108,10 @@ namespace connect_cic_api.API.Endpoints
                 context.SaveChanges();
                 return Results.NoContent();
             }).RequireAuthorization("CanModifyProfessor");
+            # endregion
 
-
-            // DELETE: /professors/{id} - Deleta um professor
+            # region DELETEs
+            // /professors/{id} - Deleta um professor
             ProfessorsRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
             {
                 var professor = context.Professors.FirstOrDefault(p => p.ProfessorID == id);
@@ -122,6 +125,7 @@ namespace connect_cic_api.API.Endpoints
                 context.SaveChanges();
                 return Results.NoContent();
             }).RequireAuthorization("CanModifyProfessor");
+            #endregion
         }
     }
 }

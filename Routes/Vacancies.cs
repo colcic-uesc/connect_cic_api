@@ -13,15 +13,17 @@ public static class Vacancies
     {
         var vacanciesRoutes = routes.MapGroup("/vacancies");
 
-        // GETs
+        # region GETs
         //lista vagas
+        // /vacancies
         vacanciesRoutes.MapGet("", (ConnectCICAPIContext context) =>
         {
             var vacancies = context.Vacancies.ToList();
             return Results.Ok(vacancies);
         });
 
-        // lista uma vaga    
+        // lista uma vaga   
+        // /vacancies/id 
         vacanciesRoutes.MapGet("/{id}", (ConnectCICAPIContext context, int id) =>
         {
             var vacancy = context.Vacancies.Find(id);
@@ -31,6 +33,7 @@ public static class Vacancies
         });
 
         // ver alunos interessados na vaga
+        // /vacancies/id/students
         vacanciesRoutes.MapGet("/{id}/students", (ConnectCICAPIContext context, int id) =>
         {
             var vacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(v => v.VacancyID == id);
@@ -39,9 +42,11 @@ public static class Vacancies
 
             return Results.Ok(vacancy.Students?.ToList());
         }).RequireAuthorization("CanViewVacancyInterests");
+        #endregion
 
-        // POSTs
+        # region POSTs
         // adicionar aluno a uma vaga
+        // /vacancies/id/students/id
         vacanciesRoutes.MapPost("/{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>
         {
             var selectedVacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(c => c.VacancyID == vacancyID);
@@ -53,14 +58,19 @@ public static class Vacancies
             if (selectedVacancy.Students == null)
                 selectedVacancy.Students = new List<Student>();
 
+            // se o aluno já estiver na lista de interessados
+            if (selectedVacancy.Students.Contains(selectedStudents))
+                return Results.Conflict();
+
 
             selectedVacancy.Students.Add(selectedStudents);
             context.SaveChanges();
             return Results.Created($"/vacancies/{vacancyID}/students", selectedStudents);
         }).RequireAuthorization("CanAddOrRemoveInterest");
+        #endregion
 
 
-        // PUT
+        # region PUTs
         // /vacancies/id - atualiza vaga especifica
         vacanciesRoutes.MapPut("/{id}", (ConnectCICAPIContext context, Vacancy vacancy, int id) => {
 
@@ -80,11 +90,11 @@ public static class Vacancies
                 return Results.NoContent();
             }
         }).RequireAuthorization("CanModifyVacancy");
+        #endregion
 
 
-        // DELETE
+        # region DELETEs
         // /vacancies/id - deleta vaga especifica
-        // /vacancies/vacancyID/students/studentID - aluno retira interesse na vaga
         vacanciesRoutes.MapDelete("/{id}", (ConnectCICAPIContext context, int id) => {
             var vacancy = context.Vacancies.FirstOrDefault(c => c.VacancyID == id);
             if (vacancy == null)
@@ -96,6 +106,7 @@ public static class Vacancies
             }
         }).RequireAuthorization("CanModifyVacancy");
 
+        // /vacancies/vacancyID/students/studentID - aluno retira interesse na vaga
         vacanciesRoutes.MapDelete("{vacancyID}/students/{studentID}", (int vacancyID, int studentID, ConnectCICAPIContext context) =>
         {
             var vacancy = context.Vacancies.Include(v => v.Students).FirstOrDefault(v => v.VacancyID == vacancyID);
@@ -103,10 +114,16 @@ public static class Vacancies
 
             if (vacancy == null || student == null)
                 return Results.NotFound();
+            
+            // se o aluno não estiver na lista de interessados
+            if (vacancy.Students == null || !vacancy.Students.Contains(student))
+                return Results.NotFound();
+            
 
             vacancy.Students?.Remove(student);
             context.SaveChanges();
             return Results.NoContent();
         }).RequireAuthorization("CanAddOrRemoveInterest");
+        #endregion
     }
 }

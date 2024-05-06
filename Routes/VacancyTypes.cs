@@ -10,21 +10,22 @@ public static class VacancyTypes
     {
         var vacancyTypesRoutes = routes.MapGroup("/vacancy-types");
 
-        // Gets
+        # region GETs
         // /vacancy-types - lista tipos de vagas
-        // /vacancy-types/id - um tipo de vaga especifico
         vacancyTypesRoutes.MapGet("", (ConnectCICAPIContext context) =>
         {
             return Results.Ok(context.VacancyTypes.ToList());
         });
 
+        // /vacancy-types/id - um tipo de vaga especifico
         vacancyTypesRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) =>
         {
             var vacancyType = context.VacancyTypes.FirstOrDefault(tv => tv.VacancyTypeID == id);
             return vacancyType != null ? Results.Ok(vacancyType) : Results.NotFound();
         });
+        # endregion
 
-        // Posts
+        # region POSTs
         // /vacancy-types - cadastra tipo de vaga
         vacancyTypesRoutes.MapPost("", (
         IValidator<VacancyType> validator,
@@ -42,8 +43,9 @@ public static class VacancyTypes
             context.SaveChanges();
             return Results.Created($"/vacancyType/{vacancyType.VacancyTypeID}", vacancyType);
         }).RequireAuthorization("AdminOnly");
+        # endregion
 
-        // Puts
+        # region PUTs
         // /vacancy-types/id - atualiza tipo de vaga
         vacancyTypesRoutes.MapPut("/{id}", (int id, VacancyType vacancyType, ConnectCICAPIContext context) =>
         {
@@ -57,8 +59,9 @@ public static class VacancyTypes
             
             return vacancyTypeToUpdate != null ? Results.Ok(vacancyTypeToUpdate) : Results.NotFound();
         }).RequireAuthorization("AdminOnly");
+        # endregion
 
-        // Deletes
+        # region DELETEs
         // /vacancy-types/id - deleta tipo de vaga
         vacancyTypesRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
@@ -72,5 +75,6 @@ public static class VacancyTypes
             
             return vacancyTypeToDelete != null ? Results.NoContent() : Results.NotFound();
         }).RequireAuthorization("AdminOnly");
+        # endregion
     }   
 }

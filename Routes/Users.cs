@@ -11,28 +11,36 @@ public static class Users
     public static void RegisterUsersEndpoint (this IEndpointRouteBuilder routes){
         var UsersRoutes = routes.MapGroup("/users");
 
+        # region GETs
         // GETs
         // /users - lista usuarios
+        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => Results.Ok(context.Users.ToList()))
+            .RequireAuthorization("AdminOnly");
         // /users/id - um usuario especifico
+        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.Find(id)))
+            .RequireAuthorization("AdminOnly");
         // /users/admins - lista usuarios admin
+        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Admin).ToList()))
+            .RequireAuthorization("AdminOnly");
         // /users/admins/id - um usuario admin especifico
+        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin)))
+            .RequireAuthorization("AdminOnly");
         // /users/students - lista usuarios estudantes
+        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList()))
+            .RequireAuthorization("AdminOnly");
         // /users/students/id - um usuario estudante especifico
+        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student)))
+            .RequireAuthorization("AdminOrStudent");
         // /users/professors - lista usuarios professores
+        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList()))
+            .RequireAuthorization("AdminOnly");
         // /users/professors/id - um usuario professor especifico
-        UsersRoutes.MapGet("", (ConnectCICAPIContext context) => Results.Ok(context.Users.ToList())).RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.Find(id))).RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/admins", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Admin).ToList())).RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/admins/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Admin))).RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList())).RequireAuthorization("AdminOnly").RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student))).RequireAuthorization("AdminOrStudent");
-        UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList())).RequireAuthorization("AdminOnly");
-        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor))).RequireAuthorization("AdminOrProfessor");
+        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor)))
+            .RequireAuthorization("AdminOrProfessor");
+        # endregion
 
-        // POSTs
+        # region POSTs
         // /users/admins - cadastra usuario admin
-        // /users/students - cadastra usuario estudante
-        // /users/professors - cadastra usuario professor
         UsersRoutes.MapPost("/admins", async (
         IValidator<UserPostDTO> validator,
         [FromBody] UserPostDTO userPost,
@@ -57,6 +65,7 @@ public static class Users
         }).RequireAuthorization("AdminOnly");
 
 
+        // /users/students - cadastra usuario estudante
         UsersRoutes.MapPost("/students", async (
         IValidator<UserPostDTO> validator,
         [FromBody] UserPostDTO userPost,
@@ -89,7 +98,8 @@ public static class Users
         });
 
 
-        UsersRoutes.MapPost("/profesors", async (
+        // /users/professors - cadastra usuario professor
+        UsersRoutes.MapPost("/professors", async (
         IValidator<UserPostDTO> validator,
         [FromBody] UserPostDTO userPost,
         ConnectCICAPIContext context) =>
@@ -118,11 +128,10 @@ public static class Users
             context.SaveChanges();
             return Results.Created($"/{user.UserID}",user);
         });
+        #endregion
 
-        // PUTs
+        # region PUTs
         // /users/id - atualiza usuario
-        // /users/professors/id - atualiza usuario professor
-        // /users/students/id - atualiza usuario estudante
         UsersRoutes.MapPut("/{id}", (
         int id,
         [FromBody] UserPostDTO user,
@@ -144,6 +153,7 @@ public static class Users
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOnly");
 
+        // /users/professors/id - atualiza usuario professor
         UsersRoutes.MapPut("/professors/{id}", (
         int id,
         [FromBody] UserPostDTO user,
@@ -172,6 +182,7 @@ public static class Users
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOrProfessor");
 
+        // /users/students/id - atualiza usuario estudante
         UsersRoutes.MapPut("/students/{id}", (
         int id,
         [FromBody] UserPostDTO user,
@@ -198,8 +209,9 @@ public static class Users
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOrStudent");
+        # endregion
 
-        // DELETEs
+        # region DELETEs
         // /users/id - deleta usuario
         UsersRoutes.MapDelete("/{id}", (int id, ConnectCICAPIContext context) =>
         {
@@ -214,6 +226,7 @@ public static class Users
             context.SaveChanges();
             return Results.Ok(UserToDelete);
         }).RequireAuthorization("AdminOnly");
+        # endregion
     }   
 
 }
