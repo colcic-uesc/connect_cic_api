@@ -72,7 +72,23 @@ builder.Services.AddAuthorization(options =>
     // excluir um professor / atualizar professor
     options.AddPolicy("CanModifyProfessor", policy =>
         policy.RequireAssertion(context =>
-            context.User.IsInRole("Admin") || context.User.IsInRole("Professor"))); 
+        {
+            // Permite acesso se for um admin
+            if (context.User.IsInRole("Admin")) 
+                return true;
+
+            // Permite acesso se for o próprio professor
+            if (context.User.IsInRole("Professor"))
+            {
+                // Assume que a rota contém o ID do professor como 'id'
+                var routeProfessorId = (context.Resource as HttpContext)?.Request.RouteValues["id"]?.ToString();
+                var professorIdClaim = context.User.FindFirst("id")?.Value;
+
+                return routeProfessorId == professorIdClaim;
+            }
+
+            return false;
+        })); 
 
     // ver alunos interessados nas vagas
      options.AddPolicy("CanViewVacancyInterests", policy =>
