@@ -26,7 +26,14 @@ public class LoginService : ILoginService
       if (user is null)
          return null;
 
-      var _token = _authManager.GenerateJwtToken(user.Login, user.Rules.ToString());
+      string _token;
+      if (authUser.ProfessorID is not null)
+         _token = _authManager.GenerateJwtToken(user.Login, user.Rules.ToString(), authUser.ProfessorID.ToString());
+      else if (authUser.StudentID is not null)
+         _token = _authManager.GenerateJwtToken(user.Login, user.Rules.ToString(), authUser.StudentID.ToString());
+      else
+         _token = _authManager.GenerateJwtToken(user.Login, user.Rules.ToString(), null);
+
       
       return new UserAuthDTO(user.Login, _token);
 

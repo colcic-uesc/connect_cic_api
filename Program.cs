@@ -49,9 +49,20 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAuthenticatedUser());
 
     // modificar um estudante específico -  admins e o próprio estudante
-    options.AddPolicy("CanModifyStudent", policy =>
-        policy.RequireAssertion(context =>
-            context.User.IsInRole("Admin") || context.User.IsInRole("Student")));
+    options.AddPolicy("CanModifyStudent", policy => 
+        policy.RequireAssertion(context => {
+
+            if (context.User.IsInRole("Admin"))
+                return true;
+            
+            if (context.User.IsInRole("Student")){
+                var routeAlunoId = (context.Resource as HttpContext)?.Request.RouteValues["id"].ToString();
+                var studentIdClaim = context.User.FindFirst("id")?.Value;
+                
+                return !string.IsNullOrEmpty(routeAlunoId) && routeAlunoId == studentIdClaim;
+            }
+            return false;
+        }));
     
     // cadastrar vaga 
     options.AddPolicy("CanAddVancancy", policy =>

@@ -6,13 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 namespace connect_cic_api.Application.Services;
 public interface IAuthManager
 {
-   public string GenerateJwtToken(string email, string role);
+   public string GenerateJwtToken(string email, string role, string id);
 }
 public class AuthManager : IAuthManager
 {
 
 
-   public string GenerateJwtToken(string userName, string role)
+   public string GenerateJwtToken(string userName, string role, string id)
    {
       var issuer = "connect_cic_api"; //emissor do token
       var audience = "Common"; //destinatário do token
@@ -23,11 +23,25 @@ public class AuthManager : IAuthManager
       var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
       
 
-      var claims = new[]
+      var claims = new Claim[] { };
+
+      if (id != null)
       {
-         new Claim("userName", userName),
-         new Claim(ClaimTypes.Role, role),
-      };
+         claims = new[]
+         {
+            new Claim("userName", userName),
+            new Claim(ClaimTypes.Role, role),
+            new Claim("id", id),
+         };
+      }
+      else{
+         claims = new[]
+         {
+            new Claim("userName", userName),
+            new Claim(ClaimTypes.Role, role),
+         };
+      }
+
       var token = new JwtSecurityToken( //cria o token
          issuer: issuer, //emissor do token
          audience: audience, //destinatário do token
