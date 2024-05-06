@@ -16,18 +16,18 @@ public class AuthManager : IAuthManager
    {
       var issuer = "connect_cic_api"; //emissor do token
       var audience = "Common"; //destinatário do token
-      var key = "Chave secreta do projeto connect_cic_api"; //chave secreta do token
+      var key = "Sei que. Voce vai querer ser. Uma de nos!"; //chave secreta do token
       //cria uma chave utilizando criptografia simétrica
       var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
       //cria as credenciais do token
       var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
       
+
       var claims = new[]
       {
          new Claim("userName", userName),
-         new Claim(ClaimTypes.Role, role)
+         new Claim(ClaimTypes.Role, role),
       };
-
       var token = new JwtSecurityToken( //cria o token
          issuer: issuer, //emissor do token
          audience: audience, //destinatário do token
