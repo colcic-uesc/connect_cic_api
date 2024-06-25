@@ -29,6 +29,16 @@ public class User
         UserID = id;
     }
 
+    public User(int id, string login, string password, UserRules rules, int? studentID, int? professorId): this(id, login, password, rules)
+    {
+        if (studentID != null)
+            StudentID = studentID;
+        else if (professorId != null)
+            ProfessorID = professorId;
+        else
+            throw new ArgumentException("User must be a student or a professor");
+    }
+
     public void Update(string login, string password, UserRules rules)
     {
         Create(login, password, rules);
