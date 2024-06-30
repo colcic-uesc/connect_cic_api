@@ -57,6 +57,11 @@ public static class Users
                 return Results.BadRequest("Usuario deve ser um admin");
             }
 
+            var userSearch = context.Users.FirstOrDefault(u => u.Login == userPost.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Login já cadastrado");
+            }
+
             var user = new User(userPost.Login, userPost.Password, userPost.Rules);
 
             context.Users.Add(user);
@@ -86,6 +91,18 @@ public static class Users
 
             if (Student == null){
                 return Results.NotFound("Estudante não encontrado");
+            }
+
+            // verifica se o estudante já possui um usuario
+            var userSearch = context.Users.FirstOrDefault(u => u.StudentID == userPost.StudentID);
+            if (userSearch != null){
+                return Results.BadRequest("Estudante já cadastrado.");
+            }
+
+            // Verifica se login já existe
+            userSearch = context.Users.FirstOrDefault(u => u.Login == userPost.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Login já cadastrado");
             }
 
             var user = new User(userPost.Login, userPost.Password, userPost.Rules);
@@ -119,6 +136,17 @@ public static class Users
 
             if (Professor == null){
                 return Results.NotFound("Professor não encontrado");
+            }
+
+            // verifica se o estudante já possui um usuario
+            var userSearch = context.Users.FirstOrDefault(u => u.ProfessorID == userPost.ProfessorID);
+            if (userSearch != null){
+                return Results.BadRequest("Professor já cadastrado.");
+            }
+
+            userSearch = context.Users.FirstOrDefault(u => u.Login == userPost.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Usuario já existe");
             }
 
             var user = new User(userPost.Login, userPost.Password, userPost.Rules);
