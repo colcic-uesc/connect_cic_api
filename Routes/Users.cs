@@ -53,16 +53,13 @@ public static class Users
                return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
-            if (userPost.Rules != UserRules.Admin){
-                return Results.BadRequest("Usuario deve ser um admin");
-            }
 
             var userSearch = context.Users.FirstOrDefault(u => u.Login == userPost.Login);
             if (userSearch != null){
                 return Results.BadRequest("Login já cadastrado");
             }
-
-            var user = new User(userPost.Login, userPost.Password, userPost.Rules);
+            
+            var user = new User(userPost.Login, userPost.Password, UserRules.Admin);
 
             context.Users.Add(user);
             context.SaveChanges();
@@ -72,8 +69,8 @@ public static class Users
 
         // /users/students - cadastra usuario estudante
         UsersRoutes.MapPost("/students", async (
-        IValidator<UserPostDTO> validator,
-        [FromBody] UserPostDTO userPost,
+        IValidator<UserStudentPostDTO> validator,
+        [FromBody] UserStudentPostDTO userPost,
         ConnectCICAPIContext context) =>
         {
             ValidationResult validationResult = await validator.ValidateAsync(userPost);
@@ -81,10 +78,6 @@ public static class Users
             if (!validationResult.IsValid)
             {
                return Results.ValidationProblem(validationResult.ToDictionary());
-            }
-
-            if (userPost.Rules != UserRules.Student){
-                return Results.BadRequest("Usuario deve ser um estudante");
             }
 
             var Student = context.Students.FirstOrDefault(s => s.StudentID == userPost.StudentID);
@@ -105,20 +98,30 @@ public static class Users
                 return Results.BadRequest("Login já cadastrado");
             }
 
-            var user = new User(userPost.Login, userPost.Password, userPost.Rules);
-            user.StudentID = userPost.StudentID;
-    
+            using var transaction = context.Database.BeginTransaction();
 
-            context.Users.Add(user);
-            context.SaveChanges();
-            return Results.Created($"/{user.UserID}",user);
+            try{
+                var user = new User(userPost.Login, userPost.Password, UserRules.Student);
+                user.StudentID = userPost.StudentID;
+                context.Users.Add(user);
+                context.SaveChanges();
+
+                Student.UserID = user.UserID;
+                context.SaveChanges();
+
+                transaction.Commit();
+                return Results.Created($"/{user.UserID}",user);
+            }catch (Exception e){
+                transaction.Rollback();
+                return Results.BadRequest(e.Message);
+            }
         });
 
 
         // /users/professors - cadastra usuario professor
         UsersRoutes.MapPost("/professors", async (
-        IValidator<UserPostDTO> validator,
-        [FromBody] UserPostDTO userPost,
+        IValidator<UserProfessorPostDTO> validator,
+        [FromBody] UserProfessorPostDTO userPost,
         ConnectCICAPIContext context) =>
         {
             ValidationResult validationResult = await validator.ValidateAsync(userPost);
@@ -126,10 +129,6 @@ public static class Users
             if (!validationResult.IsValid)
             {
                return Results.ValidationProblem(validationResult.ToDictionary());
-            }
-
-            if (userPost.Rules != UserRules.Professor){
-                return Results.BadRequest("Usuario deve ser um professor");
             }
 
             var Professor = context.Professors.FirstOrDefault(s => s.ProfessorID == userPost.ProfessorID);
@@ -149,12 +148,23 @@ public static class Users
                 return Results.BadRequest("Usuario já existe");
             }
 
-            var user = new User(userPost.Login, userPost.Password, userPost.Rules);
-            user.ProfessorID = Professor.ProfessorID;
+            using var transaction = context.Database.BeginTransaction();
 
-            context.Users.Add(user);
-            context.SaveChanges();
-            return Results.Created($"/{user.UserID}",user);
+            try{
+                var user = new User(userPost.Login, userPost.Password, UserRules.Professor);
+                user.ProfessorID = Professor.ProfessorID;
+                context.Users.Add(user);
+                context.SaveChanges();
+
+                Professor.UserID = user.UserID;
+                context.SaveChanges();
+
+                transaction.Commit();
+                return Results.Created($"/{user.UserID}",user);
+            }catch (Exception e){
+                transaction.Rollback();
+                return Results.BadRequest(e.Message);
+            }  
         });
         #endregion
 
@@ -172,11 +182,13 @@ public static class Users
                return Results.NotFound();
             }
 
-            if (UserToUpdate.Rules != user.Rules){
-                return Results.BadRequest("Não é possivel trocar o tipo de usuario");
+            var userSearch = context.Users.FirstOrDefault(u => u.Login == user.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Login já cadastrado");
             }
 
-            UserToUpdate.Update(user.Login, user.Password, user.Rules);
+
+            UserToUpdate.Update(user.Login, user.Password, UserToUpdate.Rules);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOnly");
@@ -195,17 +207,23 @@ public static class Users
             }
 
 
-            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserID == Professor.UserID);
+            var UserToUpdate = context.Users.FirstOrDefault(u => u.ProfessorID == Professor.ProfessorID);
 
             if (UserToUpdate == null)
             {
                return Results.NotFound();
             }
-            if (UserToUpdate.Rules != user.Rules){
+
+            var userSearch = context.Users.FirstOrDefault(u => u.Login == user.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Login já cadastrado");
+            }
+
+            if (UserToUpdate.Rules != UserRules.Professor){
                 return Results.BadRequest("Não é possivel trocar o tipo de usuario");
             }
 
-            UserToUpdate.Update(user.Login, user.Password, user.Rules);
+            UserToUpdate.Update(user.Login, user.Password, UserRules.Professor);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOrProfessor");
@@ -223,17 +241,23 @@ public static class Users
                return Results.NotFound();
             }
 
-            var UserToUpdate = context.Users.FirstOrDefault(u => u.UserID == Student.UserID);
+            var UserToUpdate = context.Users.FirstOrDefault(u => u.StudentID == Student.StudentID);
 
             if (UserToUpdate == null)
             {
                return Results.NotFound();
             }
-            if (UserToUpdate.Rules != user.Rules){
+
+            var userSearch = context.Users.FirstOrDefault(u => u.Login == user.Login);
+            if (userSearch != null){
+                return Results.BadRequest("Login já cadastrado");
+            }
+
+            if (UserToUpdate.Rules != UserRules.Student){
                 return Results.BadRequest("Não é possivel trocar o tipo de usuario");
             }
 
-            UserToUpdate.Update(user.Login, user.Password, user.Rules);
+            UserToUpdate.Update(user.Login, user.Password, UserRules.Student);
             context.SaveChanges();
             return Results.Ok(UserToUpdate);
         }).RequireAuthorization("AdminOrStudent");

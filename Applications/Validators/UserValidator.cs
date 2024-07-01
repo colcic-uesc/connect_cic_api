@@ -19,8 +19,5 @@ public class UserPostValidator : AbstractValidator<UserPostDTO>
          .Matches(@"[a-z]+").WithMessage("Sua senha deve ter pelo menos uma letra minuscula.")
          .Matches(@"[0-9]+").WithMessage("Sua senha deve ter pelo menos um número.");
          
-      RuleFor(u => u.Rules)
-         .NotEmpty().WithMessage("O campo 'Rules' é obrigatório");
-         
    }
 }

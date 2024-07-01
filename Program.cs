@@ -11,7 +11,6 @@ using connect_cic_api.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Hosting.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -123,6 +122,8 @@ builder.Services.AddDbContext<ConnectCICAPIContext>();
 
 // Add Validators to DI
 builder.Services.AddScoped<IValidator<UserPostDTO>, UserPostValidator>();
+builder.Services.AddScoped<IValidator<UserStudentPostDTO>, UserStudentValidator>();
+builder.Services.AddScoped<IValidator<UserProfessorPostDTO>, UserProfessorValidator>();
 builder.Services.AddScoped<IValidator<Professor>, ProfessorValidator>();
 builder.Services.AddScoped<IValidator<Student>, StudentValidator>();
 builder.Services.AddScoped<IValidator<Vacancy>, VacancyValidator>();
