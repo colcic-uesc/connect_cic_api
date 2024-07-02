@@ -29,6 +29,19 @@ public static class Students
                 return Results.NotFound();
             return Results.Ok(student);
         }).RequireAuthorization("CanViewStudentDetails"); 
+
+        // /students/id/vacancies - lista de vagas de um estudante
+        studentsRoutes.MapGet("/{id}/vacancies", (ConnectCICAPIContext context, int id) =>
+        {
+            var student = context.Students
+                .Include(s => s.Vacancies)
+                .FirstOrDefault(s => s.StudentID == id);
+
+            if (student == null)
+                return Results.NotFound();
+
+            return Results.Ok(student.Vacancies);
+        }).RequireAuthorization("CanViewStudentDetails");
         # endregion
 
         # region POSTs
