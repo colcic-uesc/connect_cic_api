@@ -29,14 +29,28 @@ public static class Users
         UsersRoutes.MapGet("/students", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Student).ToList()))
             .RequireAuthorization("AdminOnly");
         // /users/students/id - um usuario estudante especifico
-        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Student)))
-            .RequireAuthorization("AdminOrStudent");
+        UsersRoutes.MapGet("/students/{id}", (int id, ConnectCICAPIContext context) => {
+            var UserSearch = context.Users.FirstOrDefault(u => u.StudentID == id && u.Rules == UserRules.Student);
+
+            if (UserSearch == null){
+                return Results.NotFound();
+            }else{
+                return Results.Ok(UserSearch);
+            }
+        }).RequireAuthorization("AdminOrStudent");
         // /users/professors - lista usuarios professores
         UsersRoutes.MapGet("/professors", (ConnectCICAPIContext context) => Results.Ok(context.Users.Where(u => u.Rules == UserRules.Professor).ToList()))
             .RequireAuthorization("AdminOnly");
         // /users/professors/id - um usuario professor especifico
-        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) => Results.Ok(context.Users.FirstOrDefault(u => u.UserID == id && u.Rules == UserRules.Professor)))
-            .RequireAuthorization("AdminOrProfessor");
+        UsersRoutes.MapGet("/professors/{id}", (int id, ConnectCICAPIContext context) =>{ 
+            var UserSearch = context.Users.FirstOrDefault(u => u.ProfessorID == id && u.Rules == UserRules.Professor);
+
+            if (UserSearch == null){
+                return Results.NotFound();
+            }else{
+                return Results.Ok(UserSearch);
+            }
+        }).RequireAuthorization("AdminOrProfessor");
         # endregion
 
         # region POSTs
