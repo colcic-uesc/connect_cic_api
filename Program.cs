@@ -64,7 +64,7 @@ builder.Services.AddAuthorization(options =>
         }));
     
     // cadastrar vaga 
-    options.AddPolicy("CanAddVancancy", policy =>
+    options.AddPolicy("CanAddVacancy", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") || context.User.IsInRole("Professor")));
 
